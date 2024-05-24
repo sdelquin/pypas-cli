@@ -43,7 +43,7 @@ def doc():
             '[bold red][🞫 Error][/bold red] Current folder doesn\'t have a "docs" folder!'
         )
     else:
-        os.system('open docs/README.pdf')
+        os.system(f'{utils.get_open_cmd()} docs/README.pdf')
 
 
 if __name__ == '__main__':
