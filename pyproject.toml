@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "pypas-cli"
 version = "0.0.2"
 license = { file = "LICENSE" }
-dependencies = ['setuptools', 'typer']
+dependencies = ['setuptools', 'typer', 'prettyconf', 'requests']
 authors = [
     { email = "sdelquin@gmail.com" },
     { name = "Sergio Delgado Quintero" },
