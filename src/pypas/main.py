@@ -1,11 +1,13 @@
 import os
-import tempfile
 import zipfile
 from urllib.parse import urljoin
 
-import requests
 import typer
+from rich import print
+
 from pypas import settings
+from pypas.lib import utils
+from pypas.lib.console import console
 
 app = typer.Typer(
     add_completion=False,
@@ -22,13 +24,16 @@ def run():
 @app.command()
 def get(exercise_slug: str):
     exercise_url = urljoin(settings.PYPAS_EXERCISES_URLPATH, exercise_slug + '/')
-    print(exercise_url)
-    response = requests.get(exercise_url)
-    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-        tmp_file.write(response.content)
-    with zipfile.ZipFile(tmp_file.name) as zip_ref:
+    console.print(f'Getting exercise from: {exercise_url}')
+    fname = utils.download(exercise_url, f'{exercise_slug}.zip', save_temp=True)
+    console.print('Inflating exercise bundle', end=' ')
+    with zipfile.ZipFile(fname) as zip_ref:
         zip_ref.extractall()
-    os.remove(tmp_file.name)
+    console.print('✔', style='success')
+    os.remove(fname)
+    console.print(
+        f'Exercise is available at folder [info]./{exercise_slug}[/info] [success]✔[/success]'
+    )
 
 
 if __name__ == '__main__':
