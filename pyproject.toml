@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pypas-cli"
+version = "0.0.2"
+license = { file = "LICENSE" }
+dependencies = ['setuptools', 'typer']
+authors = [
+    { email = "sdelquin@gmail.com" },
+    { name = "Sergio Delgado Quintero" },
+]
+maintainers = [
+    { name = "Sergio Delgado Quintero", email = "sdelquin@gmail.com" },
+]
+description = "Python Practical Assignments"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+homepage = "https://pypas.es"
+repository = "https://github.com/sdelquin/pypas-cli"
+
+[project.scripts]
+pypas = "pypas.main:app"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pypas"]
