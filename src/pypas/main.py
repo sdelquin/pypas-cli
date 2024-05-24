@@ -36,5 +36,15 @@ def get(exercise_slug: str):
     )
 
 
+@app.command()
+def doc():
+    if not os.path.exists('docs'):
+        console.print(
+            '[bold red][🞫 Error][/bold red] Current folder doesn\'t have a "docs" folder!'
+        )
+    else:
+        os.system('open docs/README.pdf')
+
+
 if __name__ == '__main__':
     app()
