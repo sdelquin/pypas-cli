@@ -7,7 +7,8 @@ custom_theme = Theme(
         'warning': 'yellow',
         'danger': 'bold red',
         'success': 'bold green',
+        'note': 'bold blue',
     }
 )
 
-console = Console(theme=custom_theme)
+console = Console(theme=custom_theme, highlight=False)

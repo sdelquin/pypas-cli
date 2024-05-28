@@ -3,7 +3,15 @@ from pathlib import Path
 from sys import platform
 
 import requests
-from tqdm import tqdm
+from pypas.lib.console import console
+from rich.progress import (
+    BarColumn,
+    DownloadColumn,
+    Progress,
+    TextColumn,
+    TimeRemainingColumn,
+    TransferSpeedColumn,
+)
 
 
 class OS:
@@ -13,21 +21,35 @@ class OS:
     OTHER = 4
 
 
-def download(url: str, fname: str, save_temp=False, chunk_size=1024) -> Path:
+def download(url: str, filename: str, save_temp=False, chunk_size=1024) -> Path | None:
     # https://gist.github.com/yanqd0/c13ed29e29432e3cf3e7c38467f42f51
     if save_temp:
         tmp_file = tempfile.NamedTemporaryFile(delete=False)
         target_file = tmp_file.name
     else:
-        target_file = fname
-    resp = requests.get(url, stream=True)
-    total = int(resp.headers.get('content-length', 0))
-    with open(target_file, 'wb') as file, tqdm(
-        desc=fname, total=total, unit='iB', unit_scale=True, unit_divisor=1024
-    ) as bar:
+        target_file = filename
+    try:
+        resp = requests.get(url, stream=True)
+        resp.raise_for_status()
+    except Exception as err:
+        console.print(err, style='danger')
+        return None
+    with open(target_file, 'wb') as file, Progress(
+        TextColumn('[bold blue]{task.fields[filename]}'),
+        BarColumn(),
+        '[progress.percentage]{task.percentage:>3.1f}%',
+        '•',
+        DownloadColumn(),
+        '•',
+        TransferSpeedColumn(),
+        '•',
+        TimeRemainingColumn(),
+    ) as progress:
+        total = int(resp.headers.get('content-length', 0))
+        task_id = progress.add_task('download', filename=filename, total=total)
         for data in resp.iter_content(chunk_size=chunk_size):
             size = file.write(data)
-            bar.update(size)
+            progress.update(task_id, advance=size)
     return Path(target_file)
 
 

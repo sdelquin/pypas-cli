@@ -1,9 +1,11 @@
 import os
 import zipfile
+from pathlib import Path
 from urllib.parse import urljoin
 
 import typer
 from rich import print
+from rich.prompt import Confirm
 
 from pypas import settings
 from pypas.lib import utils
@@ -23,25 +25,30 @@ def run():
 
 @app.command()
 def get(exercise_slug: str):
+    if (target_folder := Path(exercise_slug)).exists():
+        console.print(f'Folder ./{target_folder} already exists!', style='warning')
+        console.print(
+            '[italic]If continue, files coming from server will [red]OVERWRITE[/red] your existing files'
+        )
+        if not Confirm.ask('Continue', default=False):
+            return
     exercise_url = urljoin(settings.PYPAS_EXERCISES_URLPATH, exercise_slug + '/')
-    console.print(f'Getting exercise from: {exercise_url}')
-    fname = utils.download(exercise_url, f'{exercise_slug}.zip', save_temp=True)
-    console.print('Inflating exercise bundle', end=' ')
-    with zipfile.ZipFile(fname) as zip_ref:
-        zip_ref.extractall()
-    console.print('✔', style='success')
-    os.remove(fname)
-    console.print(
-        f'Exercise is available at folder [info]./{exercise_slug}[/info] [success]✔[/success]'
-    )
+    console.print(f'Getting exercise from: [italic]{exercise_url}')
+    if fname := utils.download(exercise_url, f'{exercise_slug}.zip', save_temp=True):
+        console.print('Inflating exercise bundle', end=' ')
+        with zipfile.ZipFile(fname) as zip_ref:
+            zip_ref.extractall()
+        console.print('✔', style='success')
+        os.remove(fname)
+        console.print(
+            f'Exercise is available at folder [note]./{target_folder}[/note] [success]✔[/success]'
+        )
 
 
 @app.command()
 def doc():
     if not os.path.exists('docs'):
-        console.print(
-            '[bold red][🞫 Error][/bold red] Current folder doesn\'t have a "docs" folder!'
-        )
+        console.print('[danger]Error:[/danger] Current folder doesn\'t have a "docs" folder!')
     else:
         os.system(f'{utils.get_open_cmd()} docs/README.pdf')
 
