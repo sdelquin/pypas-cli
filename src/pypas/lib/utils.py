@@ -3,7 +3,6 @@ from pathlib import Path
 from sys import platform
 
 import requests
-from pypas.lib.console import console
 from rich.progress import (
     BarColumn,
     DownloadColumn,
@@ -12,6 +11,8 @@ from rich.progress import (
     TimeRemainingColumn,
     TransferSpeedColumn,
 )
+
+from .console import console
 
 
 class OS:

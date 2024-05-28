@@ -12,7 +12,6 @@ dependencies = [
     'prettyconf',
     'requests',
     'rich',
-    'tqdm',
     'pytest',
 ]
 authors = [
