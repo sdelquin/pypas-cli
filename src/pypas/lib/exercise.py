@@ -7,7 +7,7 @@ import zipfile
 from pathlib import Path
 from urllib.parse import urljoin
 
-import tomllib
+import toml
 from pypas import settings
 
 from . import utils
@@ -52,7 +52,7 @@ class Exercise:
         console.print('Inflating exercise bundle', end=' ')
         with zipfile.ZipFile(self.downloaded_zip) as zip_ref:
             zip_ref.extractall(target_dir)
-        console.done()
+        console.check()
         os.remove(self.downloaded_zip)
         return target_dir
 
@@ -67,11 +67,11 @@ class Exercise:
                     backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
                     console.print(f'Backup {rel_file} → {backup_file}', end=' ')
                     shutil.copy(rel_file, backup_file)
-                    console.done()
+                    console.check()
                 rel_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(file, rel_file)
         shutil.rmtree(src_dir, ignore_errors=True)
-        console.great('Exercise is updated to last version!')
+        console.splash('Exercise is updated to last version!')
 
     @classmethod
     def from_config(cls) -> Exercise:
@@ -80,4 +80,4 @@ class Exercise:
     @staticmethod
     def load_config(filename: str = settings.EXERCISE_CONFIG_FILE):
         with open(filename, 'rb') as f:
-            return tomllib.load(f)
+            return toml.load(f)
