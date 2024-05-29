@@ -6,13 +6,14 @@ from pypas.lib.decorators import inside_exercise
 
 app = typer.Typer(
     add_completion=False,
-    help='✨ pypas',
+    help='✨ pypas → Python Practical Assignments',
     no_args_is_help=True,
 )
 
 
 @app.command()
-def get(exercise_slug: str):
+def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
+    """Get exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
         console.print(f'Folder {exercise.cwd_folder} already exists!', style='warning')
         console.print(
@@ -28,6 +29,7 @@ def get(exercise_slug: str):
 @app.command()
 @inside_exercise
 def doc():
+    """Open documentation for exercise."""
     exercise = Exercise.from_config()
     exercise.open_docs()
 
@@ -39,6 +41,7 @@ def update(
         False, '--force', '-f', help='Force update and omit backup of existing files'
     ),
 ):
+    """Update exercise."""
     exercise = Exercise.from_config()
     exercise.download()
     dir = exercise.unzip(to_tmp_dir=True)
