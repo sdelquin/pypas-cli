@@ -1,3 +1,6 @@
+import shlex
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from sys import platform
@@ -74,3 +77,9 @@ def get_open_cmd() -> str:
             return 'start'
         case _:
             return ''
+
+
+def upgrade_pypas():
+    args = '-m pip install --no-cache -U pypas-cli'
+    cmd = [sys.executable] + shlex.split(args)
+    subprocess.run(cmd, shell=True)

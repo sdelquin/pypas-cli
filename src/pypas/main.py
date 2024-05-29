@@ -1,7 +1,7 @@
 import typer
 from rich.prompt import Confirm
 
-from pypas import Exercise, User, config, console
+from pypas import Exercise, User, config, console, utils
 from pypas.lib.decorators import inside_exercise
 
 app = typer.Typer(
@@ -54,6 +54,12 @@ def auth(token: str = typer.Argument(help='Access token')):
     if User(token).authenticate():
         config['token'] = token
         config.save()
+
+
+@app.command()
+def upgrade():
+    """Upgrade pypas-cli from PyPI."""
+    utils.upgrade_pypas()
 
 
 if __name__ == '__main__':
