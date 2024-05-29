@@ -13,16 +13,17 @@ class User:
         self.token_validation_url = urljoin(settings.PYPAS_VALIDATE_URLPATH, token + '/')
 
     def authenticate(self) -> bool:
-        console.print(f'Authenticating user at: [i]{self.token_validation_url}', end=' ')
+        console.debug(f'Authenticating user at: [i]{self.token_validation_url}', end=' ')
         response = requests.get(self.token_validation_url)
         if response.status_code == HTTPStatus.OK:
             data = response.json()
             console.check()
             console.success(
-                f'Congratulations [i]{data['name']}[/i]. You have been successfully authenticated!'
+                f'Congratulations [i]{data['name']}[/i]. You have been successfully authenticated'
             )
             return True
         else:
             console.fail()
             console.error('User cannot be authenticated')
+            console.debug('Check the access token with the administrator')
             return False

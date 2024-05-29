@@ -6,7 +6,7 @@ from pypas.lib.decorators import inside_exercise
 
 app = typer.Typer(
     add_completion=False,
-    help='✨ pypas → Python Practical Assignments',
+    help='pypas ⚘ Python Practical Assignments',
     no_args_is_help=True,
 )
 

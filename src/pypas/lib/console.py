@@ -4,11 +4,11 @@ from rich.console import Console
 from rich.theme import Theme
 
 STYLES = {
-    'info': 'bold cyan',
-    'warning': 'bold yellow',
+    'info': 'cyan',
+    'warning': 'yellow',
+    'note': ' bold blue',
     'error': 'bold red',
     'success': 'bold green',
-    'note': 'bold blue',
     'highlight': 'bold yellow',
 }
 
@@ -29,17 +29,18 @@ class CustomConsole(Console):
             msg = f'{msg} '
         self.print(f'{msg}[error]✘')
 
-    def splash(self, msg: str = ''):
-        if msg:
-            msg = f'{msg} '
-        self.print(f'{msg}[great]✶')
+    def message(self, msg: str, style: str, *args, exclamation_mark=False, **kwargs):
+        if exclamation_mark:
+            msg += '!'
+        self.print(msg, *args, style=style, **kwargs)
 
-    def message(self, msg: str, style: str):
-        self.print(msg, style=style)
-
-
-for style in STYLES:
-    setattr(CustomConsole, style, functools.partialmethod(CustomConsole.message, style=style))
+    info = functools.partialmethod(message, style='info')
+    warning = functools.partialmethod(message, style='warning')
+    error = functools.partialmethod(message, style='error', exclamation_mark=True)
+    success = functools.partialmethod(message, style='success', exclamation_mark=True)
+    note = functools.partialmethod(message, style='note')
+    highlight = functools.partialmethod(message, style='highlight')
+    debug = functools.partialmethod(message, style='dim')
 
 
 console = CustomConsole(theme=custom_theme, highlight=False)

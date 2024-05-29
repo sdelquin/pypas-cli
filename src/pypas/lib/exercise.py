@@ -41,7 +41,7 @@ class Exercise:
         return self.folder.exists()
 
     def download(self) -> Path | None:
-        console.print(f'Getting exercise from: [italic]{self.url}')
+        console.debug(f'Getting exercise from: [italic]{self.url}')
         if downloaded_zip := utils.download(self.url, self.zipname, save_temp=True):
             self.downloaded_zip = downloaded_zip
         return downloaded_zip
@@ -65,13 +65,12 @@ class Exercise:
                 rel_file = file.relative_to(src_dir)
                 if backup and rel_file.exists() and str(rel_file) in self.config['todo']:
                     backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
-                    console.print(f'Backup {rel_file} → {backup_file}', end=' ')
+                    console.debug(f'Backup {rel_file} → {backup_file}')
                     shutil.copy(rel_file, backup_file)
-                    console.check()
                 rel_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(file, rel_file)
         shutil.rmtree(src_dir, ignore_errors=True)
-        console.splash('Exercise is updated to last version!')
+        console.success('Exercise is updated to last version!')
 
     @classmethod
     def from_config(cls) -> Exercise:
@@ -79,5 +78,5 @@ class Exercise:
 
     @staticmethod
     def load_config(filename: str = settings.EXERCISE_CONFIG_FILE):
-        with open(filename, 'rb') as f:
+        with open(filename) as f:
             return toml.load(f)

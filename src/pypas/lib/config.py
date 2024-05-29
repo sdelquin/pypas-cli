@@ -17,7 +17,7 @@ class Config:
             return toml.load(f)
 
     def save(self) -> None:
-        console.print(f'[dim]Config file has been updated: {self.path}')
+        console.debug(f'Config file has been updated: {self.path}')
         with open(self.path, 'w') as f:
             toml.dump(self.data, f)
 
