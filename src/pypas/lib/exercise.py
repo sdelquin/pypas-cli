@@ -47,8 +47,8 @@ class Exercise:
         return downloaded_zip
 
     def unzip(self, to_tmp_dir: bool = False) -> Path:
-        tmp_dir = tempfile.TemporaryDirectory()
-        target_dir = Path(tmp_dir.name) if to_tmp_dir else self.folder
+        tmp_dir = tempfile.mkdtemp()
+        target_dir = Path(tmp_dir) if to_tmp_dir else self.folder
         console.print('Inflating exercise bundle', end=' ')
         with zipfile.ZipFile(self.downloaded_zip) as zip_ref:
             zip_ref.extractall(target_dir)
