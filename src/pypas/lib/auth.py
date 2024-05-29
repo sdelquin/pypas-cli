@@ -19,7 +19,7 @@ class User:
             data = response.json()
             console.check()
             console.success(
-                f'Congratulations [i]{data['name']}[/i]. You have been successfully authenticated'
+                f'Congratulations [i]{data["name"]}[/i]. You have been successfully authenticated'
             )
             return True
         else:
