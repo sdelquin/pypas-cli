@@ -11,6 +11,19 @@ app = typer.Typer(
 )
 
 
+@app.callback(invoke_without_command=True)
+def init(
+    version: bool = typer.Option(
+        False,
+        '--version',
+        show_default=False,
+        help='Show pypas-cli installed version.',
+    ),
+):
+    if version:
+        print(utils.get_pypas_version())
+
+
 @app.command()
 def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
     """Get exercise."""
