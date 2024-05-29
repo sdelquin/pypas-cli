@@ -33,7 +33,7 @@ def download(url: str, filename: str, save_temp=False, chunk_size=1024) -> Path 
         resp = requests.get(url, stream=True)
         resp.raise_for_status()
     except Exception as err:
-        console.print(err, style='danger')
+        console.error(err)
         return None
     with open(target_file, 'wb') as file, Progress(
         TextColumn('[bold blue]{task.fields[filename]}'),
