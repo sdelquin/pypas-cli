@@ -70,7 +70,7 @@ class Exercise:
                 rel_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(file, rel_file)
         shutil.rmtree(src_dir, ignore_errors=True)
-        console.success('Exercise is updated to last version!')
+        console.success('Exercise has been updated to last version')
 
     @classmethod
     def from_config(cls) -> Exercise:
