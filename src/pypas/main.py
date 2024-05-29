@@ -1,5 +1,4 @@
 import typer
-from rich import print
 from rich.prompt import Confirm
 
 from pypas import Exercise, console
@@ -29,14 +28,21 @@ def get(exercise_slug: str):
 @app.command()
 @inside_exercise
 def doc():
-    if exercise := Exercise.from_config():
-        exercise.open_docs()
+    exercise = Exercise.from_config()
+    exercise.open_docs()
 
 
 @app.command()
 @inside_exercise
-def update():
-    print('TODO!')
+def update(
+    force: bool = typer.Option(
+        False, '--force', '-f', help='Force update and omit backup of existing files'
+    ),
+):
+    exercise = Exercise.from_config()
+    exercise.download()
+    dir = exercise.unzip(to_tmp_dir=True)
+    exercise.update(src_dir=dir, backup=not force)
 
 
 if __name__ == '__main__':
