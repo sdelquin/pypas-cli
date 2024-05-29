@@ -47,7 +47,7 @@ class Exercise:
         return downloaded_zip
 
     def unzip(self, to_tmp_dir: bool = False) -> Path:
-        tmp_dir = tempfile.TemporaryDirectory(delete=False)
+        tmp_dir = tempfile.TemporaryDirectory()
         target_dir = Path(tmp_dir.name) if to_tmp_dir else self.folder
         console.print('Inflating exercise bundle', end=' ')
         with zipfile.ZipFile(self.downloaded_zip) as zip_ref:
@@ -70,7 +70,7 @@ class Exercise:
                 rel_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(file, rel_file)
         shutil.rmtree(src_dir, ignore_errors=True)
-        console.success('Exercise has been updated to last version')
+        console.success('Exercise has been updated to the last version')
 
     @classmethod
     def from_config(cls) -> Exercise:
