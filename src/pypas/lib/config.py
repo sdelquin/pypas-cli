@@ -8,22 +8,21 @@ from pypas import console, settings
 class Config:
     def __init__(self, path: Path = settings.MAIN_CONFIG_FILE):
         self.path = path
-        if not self.path.exists():
-            console.print(f'Config file has been created: [note]{self.path}')
-            self.path.touch()
-            self.just_created = True
-        else:
-            self.just_created = False
-
-        self.data = self.load()
+        self.load()
 
     def load(self) -> dict:
-        with open(self.path) as f:
-            return toml.load(f)
+        try:
+            with open(self.path) as f:
+                self.data = toml.load(f)
+        except FileNotFoundError:
+            self.data = {}
+        return self.data
 
-    def save(self) -> None:
-        if not self.just_created:
-            console.print(f'Config file has been updated: [note]{self.path}')
+    def save(self, **kwargs) -> None:
+        for key, value in kwargs.items():
+            self[key] = value
+        action = 'updated' if self.exists() else 'created'
+        console.info(f'Config file has been {action}: [note]{self.path}')
         with open(self.path, 'w') as f:
             toml.dump(self.data, f)
 
@@ -35,3 +34,6 @@ class Config:
 
     def has_token(self) -> bool:
         return 'token' in self.data
+
+    def exists(self):
+        return self.path.exists()

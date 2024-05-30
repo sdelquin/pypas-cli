@@ -1,7 +1,7 @@
 import typer
 from rich.prompt import Confirm
 
-from pypas import Config, Exercise, User, console, utils
+from pypas import Config, Exercise, User, console, sysutils
 from pypas.lib.decorators import auth_required, inside_exercise
 
 app = typer.Typer(
@@ -22,25 +22,22 @@ def init(
     ),
 ):
     if version:
-        print(utils.get_pypas_version())
+        print(sysutils.get_pypas_version())
 
 
 @app.command()
 def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
     """Get (download) exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
-        console.print(f'Folder ./{exercise.folder} already exists!', style='warning')
-        console.print(
+        console.warning(f'Folder ./{exercise.folder} already exists!')
+        console.info(
             '[italic]If continue, files coming from server will [red]OVERWRITE[/red] your existing files'
         )
         if not Confirm.ask('Continue', default=False):
             return
     if exercise.download():
         exercise.unzip()
-        console.print(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
-    else:
-        console.print(f'Check the exercise slug: [note]{exercise_slug}')
-        console.print('Otherwise contact the administrator.')
+        console.info(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
 
 
 @app.command()
@@ -59,10 +56,9 @@ def update(
     ),
 ):
     """Update exercise."""
-    exercise = Exercise.from_config()
-    exercise.download()
-    dir = exercise.unzip(to_tmp_dir=True)
-    exercise.update(src_dir=dir, backup=not force)
+    if (exercise := Exercise.from_config()).download():
+        dir = exercise.unzip(to_tmp_dir=True)
+        exercise.update(src_dir=dir, backup=not force)
 
 
 @app.command()
@@ -70,24 +66,27 @@ def auth(token: str = typer.Argument(help='Access token')):
     """Authenticate at pypas.es (token required)."""
     if User(token).authenticate():
         config = Config()
-        config['token'] = token
-        config.save()
+        config.save(token=token)
 
 
 @app.command()
 def upgrade():
     """Upgrade pypas-cli from PyPI."""
-    utils.upgrade_pypas()
+    sysutils.upgrade_pypas()
 
 
 @app.command()
 @inside_exercise
 def zip(
-    verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase output verbose'),
+    verbose: bool = typer.Option(False, '--list', '-l', help='List compressed files.'),
 ):
     """Compress exercise contents."""
     exercise = Exercise.from_config()
-    exercise.zip(verbose=verbose)
+    zipfile = exercise.zip(verbose=verbose)
+    zipfile_size = sysutils.get_file_size(zipfile)
+    console.info(
+        f'Compressed exercise is available at: [note]{zipfile}[/note] [dim]({zipfile_size} kB)'
+    )
 
 
 @app.command()

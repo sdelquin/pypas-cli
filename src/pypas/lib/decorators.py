@@ -12,6 +12,7 @@ def inside_exercise(func):
             return func(*args, **kwargs)
         else:
             console.error('Current folder does not seem to be a pypas exercise')
+            console.info('Please [note]cd[/note] into the right folder.')
 
     return wrapper
 
@@ -24,6 +25,6 @@ def auth_required(func):
             return func(*args, **kwargs)
         else:
             console.error('You must be authenticated before uploading any exercise')
-            console.print('Run [note]pypas auth --help[/note] for more information.')
+            console.info('Run [note]pypas auth --help[/note] for more information.')
 
     return wrapper

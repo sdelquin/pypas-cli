@@ -1,6 +1,7 @@
 import shlex
 import subprocess
 import sys
+from pathlib import Path
 from sys import platform
 
 import pkg_resources
@@ -44,3 +45,7 @@ def upgrade_pypas():
 def get_pypas_version():
     dist = pkg_resources.get_distribution('pypas-cli')
     return f'{dist.key} {dist.version} from {dist.location}'
+
+
+def get_file_size(path: Path, unit=1024):
+    return round(path.stat().st_size / unit)

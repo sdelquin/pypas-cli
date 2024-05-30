@@ -1,4 +1,5 @@
 import functools
+import re
 
 from rich.console import Console
 from rich.progress import (
@@ -11,7 +12,7 @@ from rich.progress import (
 from rich.theme import Theme
 
 STYLES = {
-    'info': 'cyan',
+    'info': '',
     'warning': 'yellow',
     'note': ' bold blue',
     'error': 'bold red',
@@ -48,12 +49,13 @@ class CustomConsole(Console):
             msg = f'{msg} '
         self.print(f'{msg}[error]✘')
 
-    def message(self, msg: str, style: str, *args, emphasis=False, **kwargs):
+    def message(self, msg: str, style: str, *args, emphasis=False, cr=True, **kwargs):
         if not isinstance(msg, str):
             msg = str(msg)
-        if emphasis:
+        if emphasis and not re.search(r'http://\S+$', msg):
             msg += '!'
-        self.print(msg, *args, style=style, **kwargs)
+        end = '\n' if cr else ' '
+        self.print(msg, *args, style=style, end=end, **kwargs)
 
     info = functools.partialmethod(message, style='info')
     warning = functools.partialmethod(message, style='warning')

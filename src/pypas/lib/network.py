@@ -7,32 +7,31 @@ from rich.progress import (
     Progress,
 )
 
-from .console import PROGRESS_ITEMS, console
+from .console import PROGRESS_ITEMS
+from .monads import Monad
 
 
-def download(url: str, filename: str, save_temp=False, chunk_size=1024) -> Path | None:
+def download(url: str, filename: str, save_temp=False, chunk_size=1024) -> Monad:
     # https://gist.github.com/yanqd0/c13ed29e29432e3cf3e7c38467f42f51
-    if save_temp:
-        tmp_file = tempfile.NamedTemporaryFile(delete=False)
-        target_file = tmp_file.name
-    else:
-        target_file = filename
+    target_file = tempfile.mkstemp(suffix='.zip')[1] if save_temp else filename
     try:
-        resp = requests.get(url, stream=True)
-        resp.raise_for_status()
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
     except Exception as err:
-        console.error(err, emphasis=False)
-        return None
+        return Monad(Monad.ERROR, err)
+    if response.headers.get('content-type') == 'application/json':
+        if not (data := response.json())['success']:
+            return Monad(Monad.ERROR, data['payload'])
     with open(target_file, 'wb') as file, Progress(*PROGRESS_ITEMS) as progress:
-        total = int(resp.headers.get('content-length', 0))
-        task_id = progress.add_task('download', filename=filename, total=total)
-        for data in resp.iter_content(chunk_size=chunk_size):
+        filesize = int(response.headers.get('content-length', 0))
+        task_id = progress.add_task('download', filename=filename, total=filesize)
+        for data in response.iter_content(chunk_size=chunk_size):
             size = file.write(data)
             progress.update(task_id, advance=size)
-    return Path(target_file)
+    return Monad(Monad.SUCCESS, Path(target_file))
 
 
-def upload(url: str, fields: dict, filepath: Path, filename: str = '') -> tuple[bool, str]:
+def upload(url: str, fields: dict, filepath: Path, filename: str = '') -> Monad:
     # https://stackoverflow.com/a/67726532
     def update_progress(monitor):
         pending = filesize - task.completed
@@ -53,7 +52,7 @@ def upload(url: str, fields: dict, filepath: Path, filename: str = '') -> tuple[
     try:
         response.raise_for_status()
     except Exception as err:
-        return False, str(err)
+        return Monad(Monad.ERROR, err)
     else:
         data = response.json()
-        return data['success'], data['payload']
+        return Monad(data['success'], data['payload'])
