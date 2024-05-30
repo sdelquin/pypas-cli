@@ -5,19 +5,17 @@ import shutil
 import tempfile
 import zipfile
 from pathlib import Path
-from urllib.parse import urljoin
 
 import toml
 from pypas import settings
 
-from . import utils
+from . import network, utils
 from .console import console
 
 
 class Exercise:
     def __init__(self, exercise_slug: str):
         self.slug = exercise_slug
-        self.url = urljoin(settings.PYPAS_EXERCISES_URLPATH, exercise_slug + '/')
 
     @property
     def zipname(self) -> str:
@@ -26,10 +24,6 @@ class Exercise:
     @property
     def folder(self) -> Path:
         return Path(self.slug)
-
-    @property
-    def cwd_folder(self) -> str:
-        return f'./{self.folder}'
 
     @property
     def config(self) -> dict:
@@ -47,26 +41,30 @@ class Exercise:
         return self.folder.exists()
 
     def download(self) -> Path | None:
-        console.debug(f'Getting exercise from: [italic]{self.url}')
-        if downloaded_zip := utils.download(self.url, self.zipname, save_temp=True):
+        url = settings.PYPAS_GET_EXERCISE_URLPATH.format(exercise_slug=self.slug)
+        console.debug(f'Getting exercise from: [italic]{url}')
+        if downloaded_zip := network.download(url, self.zipname, save_temp=True):
             self.downloaded_zip = downloaded_zip
         return downloaded_zip
 
     def zip(self, to_tmp_dir: bool = False, verbose: bool = False) -> Path:
-        console.print('Compressing exercise contents')
+        console.print('Compressing exercise contents', end='\n' if verbose else ' ')
         zip_path = tempfile.mkstemp(suffix='.zip')[1] if to_tmp_dir else self.zipname
         zip_file = Path(zip_path)
         with zipfile.ZipFile(zip_file, 'w') as archive:
             for f in self.contents:
-                if f == zip_file:
+                if f.name == self.zipname:
                     continue
                 if verbose:
                     console.debug(f)
                 archive.write(f)
         zip_size = round(zip_file.stat().st_size / 1024)
-        console.print(
-            f'Compressed exercise is available at: [note]{zip_file}[/note] [dim]({zip_size} KB)'
-        )
+        if verbose:
+            console.print(
+                f'Compressed exercise is available at: [note]{zip_file}[/note] [dim]({zip_size} kB)'
+            )
+        else:
+            console.check()
         return zip_file
 
     def unzip(self, to_tmp_dir: bool = False) -> Path:
@@ -95,6 +93,18 @@ class Exercise:
         shutil.rmtree(src_dir, ignore_errors=True)
         console.success('Exercise has been updated to the last version')
 
+    def upload(self, zipfile: Path, token: str):
+        url = settings.PYPAS_PUT_EXERCISE_URLPATH.format(exercise_slug=self.slug)
+        console.debug(f'Uploading exercise to: [italic]{url}')
+        success, msg = network.upload(
+            url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
+        )
+        if success:
+            console.success(msg)
+        else:
+            console.error(msg, emphasis=False)
+        zipfile.unlink(missing_ok=True)
+
     @classmethod
     def from_config(cls) -> Exercise:
         return cls(Exercise.load_config()['slug'])
@@ -103,3 +113,6 @@ class Exercise:
     def load_config(filename: str = settings.EXERCISE_CONFIG_FILE):
         with open(filename) as f:
             return toml.load(f)
+
+    def __str__(self):
+        return self.slug

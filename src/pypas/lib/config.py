@@ -29,3 +29,9 @@ class Config:
 
     def __setitem__(self, name: str, value: Any) -> None:
         self.data[name] = value
+
+    def __getitem__(self, name) -> object:
+        return self.data[name]
+
+    def has_token(self) -> bool:
+        return 'token' in self.data

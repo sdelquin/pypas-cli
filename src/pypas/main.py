@@ -2,7 +2,7 @@ import typer
 from rich.prompt import Confirm
 
 from pypas import Config, Exercise, User, console, utils
-from pypas.lib.decorators import inside_exercise
+from pypas.lib.decorators import auth_required, inside_exercise
 
 app = typer.Typer(
     add_completion=False,
@@ -27,9 +27,9 @@ def init(
 
 @app.command()
 def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
-    """Get exercise."""
+    """Get (download) exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
-        console.print(f'Folder {exercise.cwd_folder} already exists!', style='warning')
+        console.print(f'Folder ./{exercise.folder} already exists!', style='warning')
         console.print(
             '[italic]If continue, files coming from server will [red]OVERWRITE[/red] your existing files'
         )
@@ -37,7 +37,7 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
             return
     if exercise.download():
         exercise.unzip()
-        console.print(f'Exercise is available at [note]{exercise.cwd_folder}[/note] [success]✔')
+        console.print(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
     else:
         console.print(f'Check the exercise slug: [note]{exercise_slug}')
         console.print('Otherwise contact the administrator.')
@@ -88,6 +88,17 @@ def zip(
     """Compress exercise contents."""
     exercise = Exercise.from_config()
     exercise.zip(verbose=verbose)
+
+
+@app.command()
+@auth_required
+@inside_exercise
+def put():
+    """Put (upload) exercise."""
+    exercise = Exercise.from_config()
+    zipfile = exercise.zip(to_tmp_dir=True)
+    config = Config()
+    exercise.upload(zipfile, config['token'])
 
 
 if __name__ == '__main__':
