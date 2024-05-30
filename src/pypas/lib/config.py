@@ -9,7 +9,12 @@ class Config:
     def __init__(self, path: Path = settings.MAIN_CONFIG_FILE):
         self.path = path
         if not self.path.exists():
+            console.print(f'Config file has been created: [note]{self.path}')
             self.path.touch()
+            self.just_created = True
+        else:
+            self.just_created = False
+
         self.data = self.load()
 
     def load(self) -> dict:
@@ -17,12 +22,10 @@ class Config:
             return toml.load(f)
 
     def save(self) -> None:
-        console.debug(f'Config file has been updated: {self.path}')
+        if not self.just_created:
+            console.print(f'Config file has been updated: [note]{self.path}')
         with open(self.path, 'w') as f:
             toml.dump(self.data, f)
 
     def __setitem__(self, name: str, value: Any) -> None:
         self.data[name] = value
-
-
-config = Config()

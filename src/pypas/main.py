@@ -1,7 +1,7 @@
 import typer
 from rich.prompt import Confirm
 
-from pypas import Exercise, User, config, console, utils
+from pypas import Config, Exercise, User, console, utils
 from pypas.lib.decorators import inside_exercise
 
 app = typer.Typer(
@@ -68,6 +68,7 @@ def update(
 def auth(token: str = typer.Argument(help='Access token')):
     """Authenticate at pypas.es (token must be given by administrator)"""
     if User(token).authenticate():
+        config = Config()
         config['token'] = token
         config.save()
 

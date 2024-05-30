@@ -25,5 +25,5 @@ class User:
         else:
             console.fail()
             console.error('User cannot be authenticated')
-            console.debug('Check the access token with the administrator')
+            console.print('Check the access token with the administrator.')
             return False
