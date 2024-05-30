@@ -37,6 +37,9 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
     if exercise.download():
         exercise.unzip()
         console.print(f'Exercise is available at [note]{exercise.cwd_folder}[/note] [success]✔')
+    else:
+        console.print(f'Check the exercise slug: [note]{exercise_slug}')
+        console.print('Otherwise contact the administrator.')
 
 
 @app.command()

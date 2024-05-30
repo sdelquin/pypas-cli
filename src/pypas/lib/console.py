@@ -30,6 +30,8 @@ class CustomConsole(Console):
         self.print(f'{msg}[error]✘')
 
     def message(self, msg: str, style: str, *args, exclamation_mark=False, **kwargs):
+        if not isinstance(msg, str):
+            msg = str(msg)
         if exclamation_mark:
             msg += '!'
         self.print(msg, *args, style=style, **kwargs)
