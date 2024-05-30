@@ -8,6 +8,7 @@ app = typer.Typer(
     add_completion=False,
     help='pypas ⚘ Python Practical Assignments',
     no_args_is_help=True,
+    pretty_exceptions_enable=False,
 )
 
 
@@ -66,7 +67,7 @@ def update(
 
 @app.command()
 def auth(token: str = typer.Argument(help='Access token')):
-    """Authenticate at pypas.es (token must be given by administrator)"""
+    """Authenticate at pypas.es (token required)."""
     if User(token).authenticate():
         config = Config()
         config['token'] = token
@@ -77,6 +78,16 @@ def auth(token: str = typer.Argument(help='Access token')):
 def upgrade():
     """Upgrade pypas-cli from PyPI."""
     utils.upgrade_pypas()
+
+
+@app.command()
+@inside_exercise
+def zip(
+    verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase output verbose'),
+):
+    """Compress exercise contents."""
+    exercise = Exercise.from_config()
+    exercise.zip(verbose=verbose)
 
 
 if __name__ == '__main__':

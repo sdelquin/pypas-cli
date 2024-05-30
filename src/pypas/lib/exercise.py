@@ -37,6 +37,12 @@ class Exercise:
             self._cfg = Exercise.load_config()
         return self._cfg
 
+    @property
+    def contents(self):
+        for item in Path('.').glob('**/*'):
+            if item.is_file():
+                yield item
+
     def folder_exists(self) -> bool:
         return self.folder.exists()
 
@@ -45,6 +51,23 @@ class Exercise:
         if downloaded_zip := utils.download(self.url, self.zipname, save_temp=True):
             self.downloaded_zip = downloaded_zip
         return downloaded_zip
+
+    def zip(self, to_tmp_dir: bool = False, verbose: bool = False) -> Path:
+        console.print('Compressing exercise contents')
+        zip_path = tempfile.mkstemp(suffix='.zip')[1] if to_tmp_dir else self.zipname
+        zip_file = Path(zip_path)
+        with zipfile.ZipFile(zip_file, 'w') as archive:
+            for f in self.contents:
+                if f == zip_file:
+                    continue
+                if verbose:
+                    console.debug(f)
+                archive.write(f)
+        zip_size = round(zip_file.stat().st_size / 1024)
+        console.print(
+            f'Compressed exercise is available at: [note]{zip_file}[/note] [dim]({zip_size} KB)'
+        )
+        return zip_file
 
     def unzip(self, to_tmp_dir: bool = False) -> Path:
         tmp_dir = tempfile.mkdtemp()
