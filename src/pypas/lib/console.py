@@ -19,7 +19,7 @@ STYLES = {
     'warning': 'yellow',
     'quote': 'cyan',
     'note': ' bold blue',
-    'highlight': 'bold yellow',
+    'highlight': 'bold magenta',
 }
 
 PROGRESS_ITEMS = (
@@ -60,12 +60,13 @@ class CustomConsole(Console):
         self.print(msg, *args, style=style, end=end, **kwargs)
 
     info = functools.partialmethod(message, style='info')
-    warning = functools.partialmethod(message, style='warning')
     error = functools.partialmethod(message, style='error', emphasis=True)
     success = functools.partialmethod(message, style='success', emphasis=True)
+    warning = functools.partialmethod(message, style='warning')
+    debug = functools.partialmethod(message, style='dim')
+    quote = functools.partialmethod(message, style='quote')
     note = functools.partialmethod(message, style='note')
     highlight = functools.partialmethod(message, style='highlight')
-    debug = functools.partialmethod(message, style='dim')
 
 
 class CustomTable(Table):
