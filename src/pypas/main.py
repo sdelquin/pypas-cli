@@ -113,5 +113,13 @@ def test(
         exercise.test()
 
 
+@app.command()
+@inside_exercise
+def stats():
+    """Get stats of uploaded exercises."""
+    exercise = Exercise.from_config()
+    exercise.show_stats()
+
+
 if __name__ == '__main__':
     app()

@@ -59,3 +59,14 @@ def upload(url: str, fields: dict, filepath: Path, filename: str = '') -> Monad:
     else:
         data = response.json()
         return Monad(data['success'], data['payload'])
+
+
+def post(url: str, payload: dict) -> Monad:
+    try:
+        response = requests.post(url, payload)
+        response.raise_for_status()
+    except Exception as err:
+        return Monad(Monad.ERROR, err)
+    if not (data := response.json())['success']:
+        return Monad(Monad.ERROR, data['payload'])
+    return Monad(Monad.SUCCESS, data['payload'])

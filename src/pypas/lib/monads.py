@@ -2,7 +2,7 @@ class Monad:
     ERROR = 0
     SUCCESS = 1
 
-    def __init__(self, status: int, payload: object):
+    def __init__(self, status: int, payload):
         self.status = status
         self.payload = payload
 

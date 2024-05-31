@@ -11,6 +11,7 @@ import toml
 from pypas import settings
 
 from . import network, sysutils
+from .config import Config
 from .console import CustomTable, console
 
 
@@ -142,6 +143,24 @@ class Exercise:
         )
         table.add_row('pytest <path/to>::<test>', 'Run specific test.')
         console.print(table)
+
+    def show_stats(self) -> None:
+        url = settings.PYPAS_STATS_URLPATH
+        console.debug(f'Getting stats from: [italic]{url}', cr=False)
+        config = Config()
+        if monad := network.post(url, dict(token=config['token'])):
+            passed = monad.payload['passed']
+            if (uploaded := monad.payload['uploaded']) > 0:
+                rate = round(passed / uploaded * 100)
+            else:
+                rate = 0
+            console.check()
+            console.info(
+                f'[success]{passed}[/success]/[note]{uploaded}[/note] = {rate}% [dim][success]<passed>[/success]/[note]<uploaded>[/note]'
+            )
+        else:
+            console.fail()
+            console.error(monad.payload)
 
     def __str__(self):
         return self.slug
