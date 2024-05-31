@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
@@ -10,7 +11,7 @@ import toml
 from pypas import settings
 
 from . import network, sysutils
-from .console import console
+from .console import CustomTable, console
 
 
 class Exercise:
@@ -102,6 +103,9 @@ class Exercise:
             console.error(monad.payload)
         zipfile.unlink(missing_ok=True)
 
+    def test(self):
+        subprocess.run('pytest')
+
     @classmethod
     def from_config(cls) -> Exercise:
         return cls(Exercise.load_config()['slug'])
@@ -110,6 +114,30 @@ class Exercise:
     def load_config(filename: str = settings.EXERCISE_CONFIG_FILE):
         with open(filename) as f:
             return toml.load(f)
+
+    @staticmethod
+    def pytest_help():
+        console.info('[note]pypas test[/note] is just a wrapper for [note]pytest[/note]')
+        console.info(
+            'You can find documentation on how to invoke pytest at: [warning]https://docs.pytest.org/en/latest/how-to/usage.html'
+        )
+        console.debug('Here you have some of the more useful options:')
+
+        table = CustomTable(('Command', 'quote'), ('Description', ''))
+        table.add_row('pytest -x', 'Exit instantly on first error or failed test.')
+        table.add_row(
+            'pytest -k <expression>',
+            'Only run tests which match the given substring expression.',
+        )
+        table.add_row('pytest -v', 'Increase verbosity.')
+        table.add_row('pytest -q', 'Decrease verbosity.')
+        table.add_row('pytest --lf', 'Rerun only the tests that failed at the last run.')
+        table.add_row(
+            'pytest --sw',
+            'Exit on test failure and continue from last failing test next time.',
+        )
+        table.add_row('pytest <path/to>::<test>', 'Run specific test.')
+        console.print(table)
 
     def __str__(self):
         return self.slug

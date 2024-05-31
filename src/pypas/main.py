@@ -100,5 +100,18 @@ def put():
     exercise.upload(zipfile, config['token'])
 
 
+@app.command()
+@inside_exercise
+def test(
+    help: bool = typer.Option(False, '--help', '-h', help='Show test options.'),
+):
+    """Test exercise."""
+    exercise = Exercise.from_config()
+    if help:
+        exercise.pytest_help()
+    else:
+        exercise.test()
+
+
 if __name__ == '__main__':
     app()

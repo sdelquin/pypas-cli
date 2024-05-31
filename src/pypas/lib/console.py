@@ -9,14 +9,16 @@ from rich.progress import (
     TimeRemainingColumn,
     TransferSpeedColumn,
 )
+from rich.table import Table
 from rich.theme import Theme
 
 STYLES = {
     'info': '',
-    'warning': 'yellow',
-    'note': ' bold blue',
     'error': 'bold red',
     'success': 'bold green',
+    'warning': 'yellow',
+    'quote': 'cyan',
+    'note': ' bold blue',
     'highlight': 'bold yellow',
 }
 
@@ -64,6 +66,13 @@ class CustomConsole(Console):
     note = functools.partialmethod(message, style='note')
     highlight = functools.partialmethod(message, style='highlight')
     debug = functools.partialmethod(message, style='dim')
+
+
+class CustomTable(Table):
+    def __init__(self, *columns):
+        super().__init__()
+        for name, style in columns:
+            self.add_column(name, style=style)
 
 
 console = CustomConsole(theme=custom_theme, highlight=False)
