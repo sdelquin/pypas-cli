@@ -54,7 +54,7 @@ class CustomConsole(Console):
     def message(self, msg: str, style: str, *args, emphasis=False, cr=True, **kwargs):
         if not isinstance(msg, str):
             msg = str(msg)
-        if emphasis and not re.search(r'https?://\S+$', msg):
+        if emphasis and not re.search(r'(https?://\S+)|\)$', msg):
             msg += '!'
         end = '\n' if cr else ' '
         self.print(msg, *args, style=style, end=end, **kwargs)

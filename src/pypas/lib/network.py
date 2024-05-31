@@ -47,7 +47,10 @@ def upload(url: str, fields: dict, filepath: Path, filename: str = '') -> Monad:
         e = MultipartEncoder(fields=fields)
         m = MultipartEncoderMonitor(e, update_progress)
         headers = {'Content-Type': m.content_type}
-        response = requests.post(url, data=m, headers=headers, stream=True)
+        try:
+            response = requests.post(url, data=m, headers=headers, stream=True)
+        except Exception as err:
+            return Monad(Monad.ERROR, err)
 
     try:
         response.raise_for_status()
