@@ -27,7 +27,7 @@ def init(
 
 @app.command()
 def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
-    """Get (download) exercise."""
+    """Get exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
         console.warning(f'Folder ./{exercise.folder} already exists!')
         console.info(
@@ -92,8 +92,8 @@ def zip(
 @app.command()
 @auth_required
 @inside_exercise
-def put():
-    """Put (upload) exercise."""
+def upload():
+    """Upload exercise."""
     exercise = Exercise.from_config()
     zipfile = exercise.zip(to_tmp_dir=True)
     config = Config()

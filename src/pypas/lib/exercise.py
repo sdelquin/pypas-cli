@@ -94,7 +94,7 @@ class Exercise:
         console.success('Exercise has been updated to the last version')
 
     def upload(self, zipfile: Path, token: str):
-        url = settings.PYPAS_PUT_EXERCISE_URLPATH.format(exercise_slug=self.slug)
+        url = settings.PYPAS_UPLOAD_ASSIGNMENT_URLPATH.format(exercise_slug=self.slug)
         console.debug(f'Uploading exercise to: [italic]{url}')
         if monad := network.upload(
             url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
