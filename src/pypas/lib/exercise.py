@@ -128,7 +128,7 @@ class Exercise:
         )
         console.debug('Here you have some of the more useful options:')
 
-        table = CustomTable(('Command', 'quote'), ('Description', ''))
+        table = CustomTable(('Command', 'quote'), 'Description')
         table.add_row('pytest -x', 'Exit instantly on first error or failed test.')
         table.add_row(
             'pytest -k <expression>',
@@ -149,15 +149,23 @@ class Exercise:
         console.debug(f'Getting stats from: [italic]{url}', cr=False)
         config = Config()
         if monad := network.post(url, dict(token=config['token'])):
-            passed = monad.payload['passed']
-            if (uploaded := monad.payload['uploaded']) > 0:
-                rate = round(passed / uploaded * 100)
-            else:
-                rate = 0
             console.check()
-            console.info(
-                f'[success]{passed}[/success]/[note]{uploaded}[/note] = {rate}% [dim][success]<passed>[/success]/[note]<uploaded>[/note]'
+            table = CustomTable(
+                'Frame', ('Uploaded', 'dim'), ('Passed', 'success'), 'Total', ('Rate', 'note')
             )
+            for frame in monad.payload:
+                rate = frame['passed'] / frame['total'] * 10
+                table.add_row(
+                    frame['name'],
+                    str(frame['uploaded']),
+                    str(frame['passed']),
+                    str(frame['total']),
+                    f'{rate:.02f}',
+                )
+                # console.info(
+                #     f'[success]{passed}[/success]/[note]{uploaded}[/note] = {rate}% [dim][success]<passed>[/success]/[note]<uploaded>[/note]'
+                # )
+            console.print(table)
         else:
             console.fail()
             console.error(monad.payload)

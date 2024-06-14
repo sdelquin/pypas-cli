@@ -72,7 +72,13 @@ class CustomConsole(Console):
 class CustomTable(Table):
     def __init__(self, *columns):
         super().__init__()
-        for name, style in columns:
+        for column in columns:
+            if isinstance(column, str):
+                name = column
+                style = ''
+            else:
+                # iterable is expected!
+                name, style = column
             self.add_column(name, style=style)
 
 
