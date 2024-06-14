@@ -78,15 +78,13 @@ def upgrade():
 @app.command()
 @inside_exercise
 def zip(
-    verbose: bool = typer.Option(False, '--list', '-l', help='List compressed files.'),
+    verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.'),
 ):
     """Compress exercise contents."""
     exercise = Exercise.from_config()
     zipfile = exercise.zip(verbose=verbose)
-    zipfile_size = sysutils.get_file_size(zipfile)
-    console.info(
-        f'Compressed exercise is available at: [note]{zipfile}[/note] [dim]({zipfile_size} kB)'
-    )
+    size, str_size = sysutils.get_file_size(zipfile)
+    console.info(f'Compressed exercise is available at: [note]{zipfile}[/note] [dim]({str_size})')
 
 
 @app.command()

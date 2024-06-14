@@ -47,5 +47,18 @@ def get_pypas_version():
     return f'{dist.key} {dist.version} from {dist.location}'
 
 
-def get_file_size(path: Path, unit=1024):
-    return round(path.stat().st_size / unit)
+def get_file_size(path: Path) -> tuple[int, str]:
+    KB = 1024
+    MB = 1024 * 1024
+
+    size = path.stat().st_size
+    if size < KB:
+        usize = size
+        unit = 'B'
+    elif KB < size < MB:
+        usize = size / KB
+        unit = 'KB'
+    else:
+        usize = size / MB
+        unit = 'MB'
+    return size, f'{usize:.1f} {unit}'

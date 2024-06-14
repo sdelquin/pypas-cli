@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -60,6 +61,10 @@ class Exercise:
             for file in self.files:
                 if file.name == self.zipname:
                     continue
+                if re.search(settings.ZIP_IGNORED_PATTERNS_RE, str(file)):
+                    if verbose:
+                        console.warning(f'Ignoring {file}')
+                    continue
                 if verbose:
                     console.debug(file)
                 archive.write(file)
@@ -94,19 +99,20 @@ class Exercise:
         console.success('Exercise has been updated to the last version')
 
     def upload(self, zipfile: Path, token: str):
-        url = settings.PYPAS_PUT_ASSIGNMENT_URLPATH.format(exercise_slug=self.slug)
-        console.debug(f'Uploading exercise to: [italic]{url}')
-        if monad := network.upload(
-            url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
-        ):
-            console.check('Exercise was successfully upload')
-            if monad.payload:  # exercise passed tests
-                console.success('Tests PASSED')
+        if self.check_zipfile_size(zipfile):
+            url = settings.PYPAS_PUT_ASSIGNMENT_URLPATH.format(exercise_slug=self.slug)
+            console.debug(f'Uploading exercise to: [italic]{url}')
+            if monad := network.upload(
+                url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
+            ):
+                console.check('Exercise was successfully upload')
+                if monad.payload:  # exercise passed tests
+                    console.success('Tests PASSED')
+                else:
+                    console.error('Tests FAILED')
             else:
-                console.error('Tests FAILED')
-        else:
-            console.error(monad.payload)
-        zipfile.unlink(missing_ok=True)
+                console.error(monad.payload)
+            zipfile.unlink(missing_ok=True)
 
     def test(self):
         subprocess.run('pytest')
@@ -119,6 +125,19 @@ class Exercise:
     def load_config(filename: str = settings.EXERCISE_CONFIG_FILE):
         with open(filename) as f:
             return toml.load(f)
+
+    @staticmethod
+    def check_zipfile_size(zipfile: Path, limit=settings.LARGE_FILE_SIZE) -> bool:
+        console.info('Checking file size', cr=False)
+        size, str_size = sysutils.get_file_size(zipfile)
+        if size > limit:
+            console.fail()
+            console.error(f'Aborting: zipfile is too large → {str_size}')
+            console.warning('Check contents (hidden files) or contact with administrator.')
+            return False
+        else:
+            console.check()
+            return True
 
     @staticmethod
     def pytest_help():
