@@ -105,11 +105,7 @@ class Exercise:
             if monad := network.upload(
                 url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
             ):
-                console.check('Exercise was successfully upload')
-                if monad.payload:  # exercise passed tests
-                    console.success('Tests PASSED')
-                else:
-                    console.error('Tests FAILED')
+                console.success(monad.payload)
             else:
                 console.error(monad.payload)
             zipfile.unlink(missing_ok=True)
@@ -170,20 +166,25 @@ class Exercise:
         if monad := network.post(url, dict(token=config['token'])):
             console.check()
             table = CustomTable(
-                'Frame', ('Uploaded', 'dim'), ('Passed', 'success'), 'Total', ('Rate', 'note')
+                'Frame',
+                ('Uploaded', 'dim'),
+                ('Passed', 'success'),
+                ('Failed', 'error'),
+                ('Waiting', 'dim'),
+                'Available',
+                ('Rate', 'note'),
             )
             for frame in monad.payload:
-                rate = frame['passed'] / frame['total'] * 10
+                rate = frame['passed'] / frame['total'] * 100
                 table.add_row(
                     frame['name'],
                     str(frame['uploaded']),
                     str(frame['passed']),
+                    str(frame['failed']),
+                    str(frame['waiting']),
                     str(frame['total']),
-                    f'{rate:.02f}',
+                    f'{rate:.01f}%',
                 )
-                # console.info(
-                #     f'[success]{passed}[/success]/[note]{uploaded}[/note] = {rate}% [dim][success]<passed>[/success]/[note]<uploaded>[/note]'
-                # )
             console.print(table)
         else:
             console.fail()
