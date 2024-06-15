@@ -41,15 +41,24 @@ class CustomConsole(Console):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def check(self, msg: str = ''):
+    def check(self, msg: str = '') -> None:
         if msg:
             msg = f'{msg} '
         self.print(f'{msg}[success]✔')
 
-    def fail(self, msg: str = ''):
+    def fail(self, msg: str = '') -> None:
         if msg:
             msg = f'{msg} '
         self.print(f'{msg}[error]✘')
+
+    def resolve(self, msg: str = '', status: bool = None) -> None:
+        match status:
+            case True:
+                self.check(msg)
+            case False:
+                self.fail(msg)
+            case _:
+                self.print(f'{msg}[highlight]?')
 
     def message(self, msg: str, style: str, *args, emphasis=False, cr=True, **kwargs):
         if not isinstance(msg, str):

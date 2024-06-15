@@ -77,9 +77,7 @@ def upgrade():
 
 @app.command()
 @inside_exercise
-def zip(
-    verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.'),
-):
+def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
     """Compress exercise contents."""
     exercise = Exercise.from_config()
     zipfile = exercise.zip(verbose=verbose)
@@ -113,10 +111,10 @@ def test(
 
 @app.command()
 @inside_exercise
-def stats():
-    """Get stats of uploaded exercises."""
+def log(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
+    """Get log of uploaded exercises."""
     exercise = Exercise.from_config()
-    exercise.show_stats()
+    exercise.show_log(verbose)
 
 
 if __name__ == '__main__':

@@ -159,33 +159,42 @@ class Exercise:
         table.add_row('pytest <path/to>::<test>', 'Run specific test.')
         console.print(table)
 
-    def show_stats(self) -> None:
-        url = settings.PYPAS_STATS_URLPATH
+    def show_log(self, verbose: bool = False) -> None:
+        url = settings.PYPAS_VERBOSE_LOG_URLPATH if verbose else settings.PYPAS_LOG_URLPATH
         console.debug(f'Getting stats from: [italic]{url}', cr=False)
         config = Config()
         if monad := network.post(url, dict(token=config['token'])):
             console.check()
-            table = CustomTable(
-                'Frame',
-                ('Uploaded', 'dim'),
-                ('Passed', 'success'),
-                ('Failed', 'error'),
-                ('Waiting', 'dim'),
-                'Available',
-                ('Rate', 'note'),
-            )
             for frame in monad.payload:
-                rate = frame['passed'] / frame['total'] * 100
+                table = CustomTable(
+                    'Frame',
+                    ('Uploaded', 'highlight'),
+                    ('Passed', 'success'),
+                    ('Failed', 'error'),
+                    ('Waiting', 'dim'),
+                    'Available',
+                    ('Rate', 'note'),
+                )
+                rate = frame['passed'] / frame['available'] * 100
                 table.add_row(
                     frame['name'],
                     str(frame['uploaded']),
                     str(frame['passed']),
                     str(frame['failed']),
                     str(frame['waiting']),
-                    str(frame['total']),
+                    str(frame['available']),
                     f'{rate:.01f}%',
                 )
-            console.print(table)
+                console.print(table)
+                if verbose:
+                    for assignment in frame['assignments']:
+                        match assignment['passed']:
+                            case True:
+                                console.success(assignment['exercise__slug'], emphasis=False)
+                            case False:
+                                console.error(assignment['exercise__slug'], emphasis=False)
+                            case _:
+                                console.debug(assignment['exercise__slug'])
         else:
             console.fail()
             console.error(monad.payload)
