@@ -117,5 +117,15 @@ def log(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase ve
     exercise.show_log(verbose)
 
 
+@app.command()
+def list(
+    topic: str = typer.Option(
+        '', '--topic', '-t', help='Topic. Two formats available: <primary> or <primary>/<secondary>'
+    ),
+):
+    """List exercises."""
+    Exercise.list(topic)
+
+
 if __name__ == '__main__':
     app()

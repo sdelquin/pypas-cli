@@ -161,7 +161,7 @@ class Exercise:
 
     def show_log(self, verbose: bool = False) -> None:
         url = settings.PYPAS_VERBOSE_LOG_URLPATH if verbose else settings.PYPAS_LOG_URLPATH
-        console.debug(f'Getting stats from: [italic]{url}', cr=False)
+        console.debug(f'Getting log from: [italic]{url}', cr=False)
         config = Config()
         if monad := network.post(url, dict(token=config['token'])):
             console.check()
@@ -195,6 +195,27 @@ class Exercise:
                                 console.error(assignment['exercise__slug'], emphasis=False)
                             case _:
                                 console.debug(assignment['exercise__slug'])
+        else:
+            console.fail()
+            console.error(monad.payload)
+
+    @classmethod
+    def list(cls, topic: str = None):
+        if topic:
+            safe_topic = topic.replace('/', ':')
+            url = settings.PYPAS_LIST_EXERCISES_WITH_TOPIC_URLPATH.format(topic=safe_topic)
+        else:
+            url = settings.PYPAS_LIST_EXERCISES_URLPATH
+        console.debug(f'Getting exercise list from: [italic]{url}', cr=False)
+        if monad := network.get(url):
+            console.check()
+            table = CustomTable('Exercise', ('Topic', 'quote'))
+            if monad.payload:
+                for exercise in monad.payload:
+                    table.add_row(exercise['slug'], exercise['topic'])
+                console.print(table)
+            else:
+                console.warning(f"There's no available exercises about {topic}")
         else:
             console.fail()
             console.error(monad.payload)

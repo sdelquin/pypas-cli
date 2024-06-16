@@ -9,6 +9,8 @@ PYPAS_GET_EXERCISE_URLPATH = urljoin(PYPAS_BASE_URL, '/exercises/{exercise_slug}
 PYPAS_PUT_ASSIGNMENT_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/{exercise_slug}/put/')
 PYPAS_LOG_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/log/')
 PYPAS_VERBOSE_LOG_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/log/verbose/')
+PYPAS_LIST_EXERCISES_URLPATH = urljoin(PYPAS_BASE_URL, '/exercises/list/')
+PYPAS_LIST_EXERCISES_WITH_TOPIC_URLPATH = urljoin(PYPAS_BASE_URL, '/exercises/list/{topic}/')
 
 EXERCISE_CONFIG_FILE = config('EXERCISE_CONFIG_FILE', default='.pypas.toml')
 MAIN_CONFIG_FILE = config('MAIN_CONFIG_FILE', default=Path.home() / '.pypas.toml', cast=Path)

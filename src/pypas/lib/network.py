@@ -70,3 +70,14 @@ def post(url: str, payload: dict) -> Monad:
     if not (data := response.json())['success']:
         return Monad(Monad.ERROR, data['payload'])
     return Monad(Monad.SUCCESS, data['payload'])
+
+
+def get(url: str) -> Monad:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except Exception as err:
+        return Monad(Monad.ERROR, err)
+    if not (data := response.json())['success']:
+        return Monad(Monad.ERROR, data['payload'])
+    return Monad(Monad.SUCCESS, data['payload'])
