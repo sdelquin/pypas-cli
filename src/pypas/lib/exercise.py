@@ -159,7 +159,8 @@ class Exercise:
         table.add_row('pytest <path/to>::<test>', 'Run specific test.')
         console.print(table)
 
-    def show_log(self, verbose: bool = False) -> None:
+    @staticmethod
+    def show_log(verbose: bool = False) -> None:
         url = settings.PYPAS_VERBOSE_LOG_URLPATH if verbose else settings.PYPAS_LOG_URLPATH
         console.debug(f'Getting log from: [italic]{url}', cr=False)
         config = Config()
@@ -168,22 +169,20 @@ class Exercise:
             for frame in monad.payload:
                 table = CustomTable(
                     'Frame',
-                    ('Uploaded', 'highlight'),
+                    ('Uploaded'),
                     ('Passed', 'success'),
                     ('Failed', 'error'),
                     ('Waiting', 'dim'),
-                    'Available',
-                    ('Rate', 'note'),
+                    ('Score', 'note'),
                 )
-                rate = frame['passed'] / frame['available'] * 100
+                score = frame['passed'] / frame['available'] * 10
                 table.add_row(
                     frame['name'],
-                    str(frame['uploaded']),
+                    f'{frame["uploaded"]}/{frame["available"]}',
                     str(frame['passed']),
                     str(frame['failed']),
                     str(frame['waiting']),
-                    str(frame['available']),
-                    f'{rate:.01f}%',
+                    f'{score:.02f}',
                 )
                 console.print(table)
                 if verbose:

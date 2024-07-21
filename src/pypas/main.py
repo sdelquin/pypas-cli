@@ -110,11 +110,9 @@ def test(
 
 
 @app.command()
-@inside_exercise
 def log(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
     """Log of uploaded exercises."""
-    exercise = Exercise.from_config()
-    exercise.show_log(verbose)
+    Exercise.show_log(verbose)
 
 
 @app.command()
