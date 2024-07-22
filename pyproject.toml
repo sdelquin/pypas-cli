@@ -15,6 +15,7 @@ dependencies = [
     'pytest',
     'toml',
     'requests_toolbelt',
+    'pytest-dependency',
 ]
 authors = [
     { email = "sdelquin@gmail.com" },
