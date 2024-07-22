@@ -162,41 +162,39 @@ class Exercise:
     @staticmethod
     def show_log(verbose: bool = False) -> None:
         url = settings.PYPAS_VERBOSE_LOG_URLPATH if verbose else settings.PYPAS_LOG_URLPATH
-        console.debug(f'Getting log from: [italic]{url}', cr=False)
-        config = Config()
-        if monad := network.post(url, dict(token=config['token'])):
-            console.check()
-            for frame in monad.payload:
-                table = CustomTable(
-                    'Frame',
-                    ('Uploaded'),
-                    ('Passed', 'success'),
-                    ('Failed', 'error'),
-                    ('Waiting', 'dim'),
-                    ('Score', 'note'),
-                )
-                score = frame['passed'] / frame['available'] * 10
-                table.add_row(
-                    frame['name'],
-                    f'{frame["uploaded"]}/{frame["available"]}',
-                    str(frame['passed']),
-                    str(frame['failed']),
-                    str(frame['waiting']),
-                    f'{score:.02f}',
-                )
-                console.print(table)
-                if verbose:
-                    for assignment in frame['assignments']:
-                        match assignment['passed']:
-                            case True:
-                                console.success(assignment['exercise__slug'], emphasis=False)
-                            case False:
-                                console.error(assignment['exercise__slug'], emphasis=False)
-                            case _:
-                                console.debug(assignment['exercise__slug'])
-        else:
-            console.fail()
-            console.error(monad.payload)
+        with console.status(f'[dim]Getting log from: [italic]{url}'):
+            config = Config()
+            if monad := network.post(url, dict(token=config['token'])):
+                for frame in monad.payload:
+                    table = CustomTable(
+                        'Frame',
+                        ('Uploaded'),
+                        ('Passed', 'success'),
+                        ('Failed', 'error'),
+                        ('Waiting', 'dim'),
+                        ('Score', 'note'),
+                    )
+                    score = frame['passed'] / frame['available'] * 10
+                    table.add_row(
+                        frame['name'],
+                        f'{frame["uploaded"]}/{frame["available"]}',
+                        str(frame['passed']),
+                        str(frame['failed']),
+                        str(frame['waiting']),
+                        f'{score:.02f}',
+                    )
+                    console.print(table)
+                    if verbose:
+                        for assignment in frame['assignments']:
+                            match assignment['passed']:
+                                case True:
+                                    console.success(assignment['exercise__slug'], emphasis=False)
+                                case False:
+                                    console.error(assignment['exercise__slug'], emphasis=False)
+                                case _:
+                                    console.debug(assignment['exercise__slug'])
+            else:
+                console.error(monad.payload)
 
     @classmethod
     def list(cls, topic: str = None):
@@ -205,19 +203,17 @@ class Exercise:
             url = settings.PYPAS_LIST_EXERCISES_WITH_TOPIC_URLPATH.format(topic=safe_topic)
         else:
             url = settings.PYPAS_LIST_EXERCISES_URLPATH
-        console.debug(f'Getting exercise list from: [italic]{url}', cr=False)
-        if monad := network.get(url):
-            console.check()
-            table = CustomTable('Exercise', ('Topic', 'quote'))
-            if monad.payload:
-                for exercise in monad.payload:
-                    table.add_row(exercise['slug'], exercise['topic'])
-                console.print(table)
+        with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
+            if monad := network.get(url):
+                table = CustomTable('Exercise', ('Topic', 'quote'))
+                if monad.payload:
+                    for exercise in monad.payload:
+                        table.add_row(exercise['slug'], exercise['topic'])
+                    console.print(table)
+                else:
+                    console.warning(f"There's no available exercises about {topic}")
             else:
-                console.warning(f"There's no available exercises about {topic}")
-        else:
-            console.fail()
-            console.error(monad.payload)
+                console.error(monad.payload)
 
     def __str__(self):
         return self.slug
