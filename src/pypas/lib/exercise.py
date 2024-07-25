@@ -203,6 +203,7 @@ class Exercise:
         url = settings.PYPAS_LIST_EXERCISES_URLPATH.format(topic=topic)
         with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
             if monad := network.post(url, dict(token=token)):
+                console.warning('[i]Listing exercises only from [b]active[/b] frames...')
                 table = CustomTable(('Frame', 'dim'), ('Topic', 'quote'), 'Exercise')
                 if monad.payload:
                     for row in monad.payload:
