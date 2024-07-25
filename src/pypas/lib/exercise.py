@@ -105,7 +105,8 @@ class Exercise:
             if monad := network.upload(
                 url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
             ):
-                console.success(monad.payload)
+                console.success('Exercise was sucessfully uploaded')
+                console.debug(f'(to frame [b]{monad.payload}[/b])')
             else:
                 console.error(monad.payload)
             zipfile.unlink(missing_ok=True)

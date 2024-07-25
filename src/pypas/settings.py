@@ -6,7 +6,7 @@ from prettyconf import config
 PYPAS_BASE_URL = config('PYPAS_BASE_URL', default='https://pypas.es/')
 PYPAS_AUTH_URLPATH = urljoin(PYPAS_BASE_URL, '/access/auth/')
 PYPAS_GET_EXERCISE_URLPATH = urljoin(PYPAS_BASE_URL, '/exercises/get/{exercise_slug}/')
-PYPAS_PUT_ASSIGNMENT_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/{exercise_slug}/put/')
+PYPAS_PUT_ASSIGNMENT_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/put/{exercise_slug}/')
 PYPAS_LOG_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/log/')
 PYPAS_VERBOSE_LOG_URLPATH = urljoin(PYPAS_BASE_URL, '/assignments/log/verbose/')
 PYPAS_LIST_EXERCISES_URLPATH = urljoin(PYPAS_BASE_URL, '/exercises/list/')
