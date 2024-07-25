@@ -11,11 +11,11 @@ from .console import PROGRESS_ITEMS
 from .monads import Monad
 
 
-def download(url: str, filename: str, save_temp=False, chunk_size=1024) -> Monad:
+def download(url: str, fields: dict, filename: str, save_temp=False, chunk_size=1024) -> Monad:
     # https://gist.github.com/yanqd0/c13ed29e29432e3cf3e7c38467f42f51
     target_file = tempfile.mkstemp(suffix='.zip')[1] if save_temp else filename
     try:
-        response = requests.get(url, stream=True)
+        response = requests.post(url, data=fields, stream=True)
         response.raise_for_status()
     except Exception as err:
         return Monad(Monad.ERROR, err)

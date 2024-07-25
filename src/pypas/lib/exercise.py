@@ -43,10 +43,10 @@ class Exercise:
     def folder_exists(self) -> bool:
         return self.folder.exists()
 
-    def download(self):
+    def download(self, token: str):
         url = settings.PYPAS_GET_EXERCISE_URLPATH.format(exercise_slug=self.slug)
         console.debug(f'Getting exercise from: [italic]{url}')
-        if monad := network.download(url, self.zipname, save_temp=True):
+        if monad := network.download(url, dict(token=token), self.zipname, save_temp=True):
             self.downloaded_zip = monad.payload
             return self.downloaded_zip
         else:

@@ -32,6 +32,9 @@ class Config:
     def __getitem__(self, name) -> object:
         return self.data[name]
 
+    def get(self, name) -> object | None:
+        return self.data.get(name)
+
     def has_token(self) -> bool:
         return 'token' in self.data
 

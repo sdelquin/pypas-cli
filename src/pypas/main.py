@@ -35,7 +35,8 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
         )
         if not Confirm.ask('Continue', default=False):
             return
-    if exercise.download():
+    config = Config()
+    if exercise.download(config.get('token')):
         exercise.unzip()
         console.info(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
 
