@@ -57,7 +57,8 @@ def update(
     ),
 ):
     """Update exercise."""
-    if (exercise := Exercise.from_config()).download():
+    config = Config()
+    if (exercise := Exercise.from_config()).download(config.get('token')):
         dir = exercise.unzip(to_tmp_dir=True)
         exercise.update(src_dir=dir, backup=not force)
 
