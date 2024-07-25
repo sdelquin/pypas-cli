@@ -20,9 +20,11 @@ class User:
                 console.error(err)
                 return False
             if (data := response.json())['success']:
+                payload = data['payload']
                 console.success(
-                    f'Congratulations [i]{data["payload"]}[/i]. You have been successfully authenticated'
+                    f'Congratulations [i]{payload["username"]}[/i]. You have been successfully authenticated'
                 )
+                console.debug(f'You have been enrolled in the context [b]{payload["context"]}')
                 return True
             else:
                 console.error(data['payload'])
