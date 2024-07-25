@@ -119,12 +119,12 @@ def log(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase ve
 
 @app.command()
 def list(
-    topic: str = typer.Option(
-        '', '--topic', '-t', help='Topic. Two formats available: <primary> or <primary>/<secondary>'
-    ),
+    primary_topic: str = typer.Option('', '--ptopic', '-p', help='Filter by primary topic.'),
+    secondary_topic: str = typer.Option('', '--stopic', '-s', help='Filter by secondary topic.'),
 ):
-    """List exercises."""
-    Exercise.list(topic)
+    """List exercises. Topic in format <primary>/<secondary>"""
+    config = Config()
+    Exercise.list(config.get('token'), primary_topic, secondary_topic)
 
 
 if __name__ == '__main__':

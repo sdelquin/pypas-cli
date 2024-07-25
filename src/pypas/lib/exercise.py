@@ -198,18 +198,15 @@ class Exercise:
                 console.error(monad.payload)
 
     @classmethod
-    def list(cls, topic: str = None):
-        if topic:
-            safe_topic = topic.replace('/', ':')
-            url = settings.PYPAS_LIST_EXERCISES_WITH_TOPIC_URLPATH.format(topic=safe_topic)
-        else:
-            url = settings.PYPAS_LIST_EXERCISES_URLPATH
+    def list(cls, token: str, primary_topic: str = '', secondary_topic: str = ''):
+        topic = ':'.join([primary_topic, secondary_topic])
+        url = settings.PYPAS_LIST_EXERCISES_URLPATH.format(topic=topic)
         with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
-            if monad := network.get(url):
-                table = CustomTable('Exercise', ('Topic', 'quote'))
+            if monad := network.post(url, dict(token=token)):
+                table = CustomTable(('Frame', 'dim'), ('Topic', 'quote'), 'Exercise')
                 if monad.payload:
-                    for exercise in monad.payload:
-                        table.add_row(exercise['slug'], exercise['topic'])
+                    for row in monad.payload:
+                        table.add_row(row['frame'], row['topic'], row['exercise'])
                     console.print(table)
                 else:
                     console.warning(f"There's no available exercises about {topic}")
