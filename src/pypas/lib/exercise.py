@@ -198,11 +198,13 @@ class Exercise:
                 console.error(monad.payload)
 
     @classmethod
-    def list(cls, token: str, primary_topic: str = '', secondary_topic: str = ''):
-        topic = ':'.join([primary_topic, secondary_topic])
-        url = settings.PYPAS_LIST_EXERCISES_URLPATH.format(topic=topic)
+    def list(cls, token: str, primary_topic: str, secondary_topic: str):
+        url = settings.PYPAS_LIST_EXERCISES_URLPATH
         with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
-            if monad := network.post(url, dict(token=token)):
+            payload = dict(
+                token=token, primary_topic=primary_topic, secondary_topic=secondary_topic
+            )
+            if monad := network.post(url, payload):
                 console.warning('[i]Listing exercises only from [b]active[/b] frames...')
                 table = CustomTable(('Frame', 'dim'), ('Topic', 'quote'), 'Exercise')
                 if monad.payload:
@@ -210,7 +212,7 @@ class Exercise:
                         table.add_row(row['frame'], row['topic'], row['exercise'])
                     console.print(table)
                 else:
-                    console.warning(f"There's no available exercises about {topic}")
+                    console.warning("There's no available exercises with the given criteria")
             else:
                 console.error(monad.payload)
 
