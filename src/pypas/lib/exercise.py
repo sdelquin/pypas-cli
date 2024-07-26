@@ -198,11 +198,14 @@ class Exercise:
                 console.error(monad.payload)
 
     @classmethod
-    def list(cls, token: str, primary_topic: str, secondary_topic: str):
+    def list(cls, token: str, frame: str, primary_topic: str, secondary_topic: str):
         url = settings.PYPAS_LIST_EXERCISES_URLPATH
         with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
             payload = dict(
-                token=token, primary_topic=primary_topic, secondary_topic=secondary_topic
+                token=token,
+                frame=frame,
+                primary_topic=primary_topic,
+                secondary_topic=secondary_topic,
             )
             if monad := network.post(url, payload):
                 console.warning('[i]Listing exercises only from [b]active[/b] frames...')
