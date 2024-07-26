@@ -112,9 +112,13 @@ def test(
 
 
 @app.command()
-def log(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
-    """Log of uploaded exercises."""
-    Exercise.show_log(verbose)
+def log(
+    frame: str = typer.Option('', '--frame', '-f', help='Filter by frame.'),
+    verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.'),
+):
+    """Log of uploaded assignments."""
+    config = Config()
+    Exercise.show_log(config.get('token'), frame, verbose)
 
 
 @app.command()

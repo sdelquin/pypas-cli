@@ -12,7 +12,6 @@ import toml
 from pypas import settings
 
 from . import network, sysutils
-from .config import Config
 from .console import CustomTable, console
 
 
@@ -161,39 +160,43 @@ class Exercise:
         console.print(table)
 
     @staticmethod
-    def show_log(verbose: bool = False) -> None:
-        url = settings.PYPAS_VERBOSE_LOG_URLPATH if verbose else settings.PYPAS_LOG_URLPATH
+    def show_log(token: str, frame_ref: str, verbose: bool = False) -> None:
+        url = settings.PYPAS_LOG_URLPATH
         with console.status(f'[dim]Getting log from: [italic]{url}'):
-            config = Config()
-            if monad := network.post(url, dict(token=config['token'])):
-                for frame in monad.payload:
-                    table = CustomTable(
-                        'Frame',
-                        ('Uploaded'),
-                        ('Passed', 'success'),
-                        ('Failed', 'error'),
-                        ('Waiting', 'dim'),
-                        ('Score', 'note'),
-                    )
-                    score = frame['passed'] / frame['available'] * 10
-                    table.add_row(
-                        frame['name'],
-                        f'{frame["uploaded"]}/{frame["available"]}',
-                        str(frame['passed']),
-                        str(frame['failed']),
-                        str(frame['waiting']),
-                        f'{score:.02f}',
-                    )
-                    console.print(table)
-                    if verbose:
-                        for assignment in frame['assignments']:
-                            match assignment['passed']:
-                                case True:
-                                    console.success(assignment['exercise__slug'], emphasis=False)
-                                case False:
-                                    console.error(assignment['exercise__slug'], emphasis=False)
-                                case _:
-                                    console.debug(assignment['exercise__slug'])
+            payload = dict(token=token, frame=frame_ref, verbose=verbose)
+            if monad := network.post(url, payload):
+                console.warning('[i]Listing assignments only from [b]active[/b] frames...')
+                if monad.payload:
+                    for frame in monad.payload:
+                        table = CustomTable(
+                            'Frame',
+                            ('Uploaded'),
+                            ('Passed', 'success'),
+                            ('Failed', 'error'),
+                            ('Waiting', 'dim'),
+                            ('Score', 'note'),
+                        )
+                        score = frame['passed'] / frame['available'] * 10
+                        table.add_row(
+                            frame['name'],
+                            f'{frame["uploaded"]}/{frame["available"]}',
+                            str(frame['passed']),
+                            str(frame['failed']),
+                            str(frame['waiting']),
+                            f'{score:.02f}',
+                        )
+                        console.print(table)
+                        if verbose:
+                            for assignment in frame['assignments']:
+                                match assignment['passed']:
+                                    case True:
+                                        console.check(assignment['exercise__slug'])
+                                    case False:
+                                        console.fail(assignment['exercise__slug'])
+                                    case _:
+                                        console.debug(assignment['exercise__slug'])
+                else:
+                    console.warning("There's no assignments with the given criteria")
             else:
                 console.error(monad.payload)
 
@@ -215,7 +218,7 @@ class Exercise:
                         table.add_row(row['frame'], row['topic'], row['exercise'])
                     console.print(table)
                 else:
-                    console.warning("There's no available exercises with the given criteria")
+                    console.warning("There's no exercises with the given criteria")
             else:
                 console.error(monad.payload)
 
