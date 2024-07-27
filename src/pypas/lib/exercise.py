@@ -10,6 +10,7 @@ from pathlib import Path
 
 import toml
 from pypas import settings
+from rich.panel import Panel
 
 from . import network, sysutils
 from .console import CustomTable, console
@@ -165,7 +166,7 @@ class Exercise:
         with console.status(f'[dim]Getting log from: [italic]{url}'):
             payload = dict(token=token, frame=frame_ref, verbose=verbose)
             if monad := network.post(url, payload):
-                console.warning('[i]Listing assignments only from [b]active[/b] frames...')
+                console.warning('[dim i]Listing assignments only from [b]active[/b] frames...')
                 if monad.payload:
                     for frame in monad.payload:
                         table = CustomTable(
@@ -201,24 +202,29 @@ class Exercise:
                 console.error(monad.payload)
 
     @classmethod
-    def list(cls, token: str, frame: str, primary_topic: str, secondary_topic: str):
+    def list(cls, token: str, frame_ref: str, primary_topic: str, secondary_topic: str):
         url = settings.PYPAS_LIST_EXERCISES_URLPATH
         with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
             payload = dict(
                 token=token,
-                frame=frame,
+                frame=frame_ref,
                 primary_topic=primary_topic,
                 secondary_topic=secondary_topic,
             )
             if monad := network.post(url, payload):
-                console.warning('[i]Listing exercises only from [b]active[/b] frames...')
-                table = CustomTable(('Frame', 'dim'), ('Topic', 'quote'), 'Exercise')
+                console.warning('[dim i]Listing exercises only from [b]active[/b] frames...')
                 if monad.payload:
-                    for row in monad.payload:
-                        table.add_row(row['frame'], row['topic'], row['exercise'])
-                    console.print(table)
-                else:
-                    console.warning("There's no exercises with the given criteria")
+                    for frame in monad.payload:
+                        console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
+                        if frame['exercises']:
+                            table = CustomTable('Exercise', ('Topic', 'blue'))
+                            for exercise in frame['exercises']:
+                                table.add_row(exercise['slug'], exercise['topic'])
+                            console.print(table)
+                        else:
+                            console.warning(
+                                "There's no exercises in this frame with the given criteria"
+                            )
             else:
                 console.error(monad.payload)
 
