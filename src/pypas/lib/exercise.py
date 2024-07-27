@@ -169,9 +169,9 @@ class Exercise:
                 console.warning('[dim i]Listing assignments only from [b]active[/b] frames...')
                 if monad.payload:
                     for frame in monad.payload:
+                        console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
                         table = CustomTable(
-                            'Frame',
-                            ('Uploaded'),
+                            'Uploaded',
                             ('Passed', 'success'),
                             ('Failed', 'error'),
                             ('Waiting', 'dim'),
@@ -179,7 +179,6 @@ class Exercise:
                         )
                         score = frame['passed'] / frame['available'] * 10
                         table.add_row(
-                            frame['name'],
                             f'{frame["uploaded"]}/{frame["available"]}',
                             str(frame['passed']),
                             str(frame['failed']),
@@ -189,13 +188,14 @@ class Exercise:
                         console.print(table)
                         if verbose:
                             for assignment in frame['assignments']:
+                                msg = f'· {assignment['exercise__slug']}'
                                 match assignment['passed']:
                                     case True:
-                                        console.check(assignment['exercise__slug'])
+                                        console.check(msg)
                                     case False:
-                                        console.fail(assignment['exercise__slug'])
+                                        console.fail(msg)
                                     case _:
-                                        console.debug(assignment['exercise__slug'])
+                                        console.debug(msg)
                 else:
                     console.warning("There's no assignments with the given criteria")
             else:
