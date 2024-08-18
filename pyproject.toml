@@ -26,7 +26,7 @@ maintainers = [
 ]
 description = "Python Practical Assignments"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
