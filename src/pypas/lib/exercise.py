@@ -9,8 +9,9 @@ import zipfile
 from pathlib import Path
 
 import toml
-from pypas import settings
 from rich.panel import Panel
+
+from pypas import settings
 
 from . import network, sysutils
 from .console import CustomTable, console
@@ -177,7 +178,10 @@ class Exercise:
                             ('Waiting', 'dim'),
                             ('Score', 'note'),
                         )
-                        score = frame['passed'] / frame['available'] * 10
+                        try:
+                            score = frame['passed'] / frame['available'] * 10
+                        except ZeroDivisionError:
+                            score = 0
                         table.add_row(
                             f'{frame["uploaded"]}/{frame["available"]}',
                             str(frame['passed']),
@@ -188,7 +192,7 @@ class Exercise:
                         console.print(table)
                         if verbose:
                             for assignment in frame['assignments']:
-                                msg = f'· {assignment['exercise__slug']}'
+                                msg = f'· {assignment['chunk__exercise__slug']}'
                                 match assignment['passed']:
                                     case True:
                                         console.check(msg)
