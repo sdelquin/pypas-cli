@@ -192,7 +192,7 @@ class Exercise:
                         console.print(table)
                         if verbose:
                             for assignment in frame['assignments']:
-                                msg = f'· {assignment['chunk__exercise__slug']}'
+                                msg = f'· {assignment['slug']}'
                                 match assignment['passed']:
                                     case True:
                                         console.check(msg)
