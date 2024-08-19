@@ -175,7 +175,7 @@ class Exercise:
                             'Uploaded',
                             ('Passed', 'success'),
                             ('Failed', 'error'),
-                            ('Waiting', 'dim'),
+                            ('Waiting', 'dim cyan'),
                             ('Score', 'note'),
                         )
                         try:
