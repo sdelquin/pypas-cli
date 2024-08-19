@@ -162,7 +162,7 @@ class Exercise:
         console.print(table)
 
     @staticmethod
-    def show_log(token: str, frame_ref: str, verbose: bool = False) -> None:
+    def log(token: str, frame_ref: str, verbose: bool = False) -> None:
         url = settings.PYPAS_LOG_URLPATH
         with console.status(f'[dim]Getting log from: [italic]{url}'):
             payload = dict(token=token, frame=frame_ref, verbose=verbose)
@@ -171,6 +171,7 @@ class Exercise:
                 if monad.payload:
                     for frame in monad.payload:
                         console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
+                        console.debug(f' └ Frame slug: [bright_green]{frame['slug']}')
                         table = CustomTable(
                             'Uploaded',
                             ('Passed', 'success'),
@@ -220,6 +221,7 @@ class Exercise:
                 if monad.payload:
                     for frame in monad.payload:
                         console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
+                        console.debug(f' └ Frame slug: [bright_green]{frame['slug']}')
                         if frame['exercises']:
                             table = CustomTable('Exercise', ('Topic', 'blue'))
                             for exercise in frame['exercises']:

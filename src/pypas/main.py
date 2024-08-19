@@ -118,7 +118,7 @@ def log(
 ):
     """Log of uploaded assignments."""
     config = Config()
-    Exercise.show_log(config.get('token'), frame, verbose)
+    Exercise.log(config.get('token'), frame, verbose)
 
 
 @app.command()
