@@ -11,7 +11,7 @@ dependencies = [
     'typer',
     'prettyconf',
     'requests',
-    'rich',
+    'rich==13.7.1',
     'pytest',
     'toml',
     'requests_toolbelt',
