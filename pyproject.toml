@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pypas-cli"
-version = "0.1.4"
+version = "0.1.5"
 license = { file = "LICENSE" }
 dependencies = [
     'setuptools',
     'typer',
     'prettyconf',
     'requests',
-    'rich==13.7.1',
+    'rich',
     'pytest',
     'toml',
     'requests_toolbelt',
