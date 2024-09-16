@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 import toml
+
 from pypas import console, settings
 
 
@@ -40,3 +41,7 @@ class Config:
 
     def exists(self):
         return self.path.exists()
+
+    @staticmethod
+    def unauth():
+        settings.MAIN_CONFIG_FILE.unlink(missing_ok=True)

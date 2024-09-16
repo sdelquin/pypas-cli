@@ -132,5 +132,13 @@ def list(
     Exercise.list(config.get('token'), frame, primary_topic, secondary_topic)
 
 
+@app.command()
+def unauth():
+    """Unauthenticate from pypas.es (clear token)."""
+    config = Config()
+    config.save(token='')
+    console.success('You have been successfully unauthenticated')
+
+
 if __name__ == '__main__':
     app()
