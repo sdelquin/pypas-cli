@@ -90,7 +90,7 @@ class Exercise:
         for file in src_dir.glob('**/*'):
             if file.is_file():
                 rel_file = file.relative_to(src_dir)
-                if backup and rel_file.exists() and str(rel_file) in self.config['todo']:
+                if backup and rel_file.exists() and str(rel_file) in self.config.get('todo', []):
                     backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
                     console.debug(f'Backup {rel_file} → {backup_file}')
                     shutil.copy(rel_file, backup_file)
