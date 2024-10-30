@@ -3,11 +3,11 @@ from __future__ import annotations
 import os
 import re
 import shutil
-import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
 
+import pytest
 import toml
 from rich.panel import Panel
 
@@ -119,7 +119,7 @@ A [i]requirements.txt[/i] file is detected in the current directory!
 pypas is not able to directly test this exercise.
 Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [highlight]pytest""")
         else:
-            subprocess.run('pytest')
+            pytest.main(args=[])
 
     @classmethod
     def from_config(cls) -> Exercise:
