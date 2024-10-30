@@ -14,6 +14,8 @@ EXERCISE_CONFIG_FILE = config('EXERCISE_CONFIG_FILE', default='.pypas.toml')
 MAIN_CONFIG_FILE = config('MAIN_CONFIG_FILE', default=Path.home() / '.pypas.toml', cast=Path)
 LARGE_FILE_SIZE = config('LARGE_FILE_SIZE', default=1024 * 1024, cast=int)
 ZIP_IGNORED_PATTERNS = config(
-    'ZIP_IGNORED_PATTERNS', default='cache,node_modules,DS_Store,venv', cast=config.list
+    'ZIP_IGNORED_PATTERNS',
+    default=r'cache,node_modules,DS_Store,venv,\.git,\.idea',
+    cast=config.list,
 )
 ZIP_IGNORED_PATTERNS_RE = '|'.join(ZIP_IGNORED_PATTERNS)
