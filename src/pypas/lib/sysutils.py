@@ -36,10 +36,16 @@ def get_open_cmd() -> str:
             return ''
 
 
-def upgrade_pypas():
-    args = '-m pip install --no-cache -U pypas-cli'
-    cmd = [sys.executable] + shlex.split(args)
-    subprocess.check_call(cmd)
+def upgrade_pypas() -> bool:
+    # Try first with uv
+    cmd = 'uv tool upgrade pypas-cli'
+    if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
+        return True
+    # Try then with pip
+    cmd = f'{sys.executable} -m pip install -q --no-cache -U pypas-cli'
+    if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
+        return True
+    return False
 
 
 def get_pypas_version():
