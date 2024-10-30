@@ -229,7 +229,7 @@ Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [highl
                         console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
                         console.debug(f' └ Frame slug: [bright_green]{frame['slug']}')
                         if frame['exercises']:
-                            table = CustomTable('Exercise', ('Topic', 'blue'))
+                            table = CustomTable('Exercise', ('Topic', 'magenta'))
                             for exercise in frame['exercises']:
                                 table.add_row(exercise['slug'], exercise['topic'])
                             console.print(table)
