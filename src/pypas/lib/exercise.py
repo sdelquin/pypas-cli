@@ -113,7 +113,13 @@ class Exercise:
             zipfile.unlink(missing_ok=True)
 
     def test(self):
-        subprocess.run('pytest')
+        if Path('requirements.txt').exists():
+            console.print("""[red]Attention[/red]
+A [i]requirements.txt[/i] file is detected in the current directory!
+pypas is not able to directly test this exercise.
+Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [highlight]pytest""")
+        else:
+            subprocess.run('pytest')
 
     @classmethod
     def from_config(cls) -> Exercise:
