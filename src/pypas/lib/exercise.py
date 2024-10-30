@@ -117,7 +117,7 @@ class Exercise:
             console.print("""[red]Attention[/red]
 A [i]requirements.txt[/i] file is detected in the current directory!
 pypas is not able to directly test this exercise.
-Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [highlight]pytest""")
+Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]pytest""")
         else:
             pytest.main(args=[])
 
