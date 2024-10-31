@@ -39,12 +39,17 @@ def get_open_cmd() -> str:
 def upgrade_pypas() -> bool:
     # Try first with uv
     cmd = 'uv tool upgrade pypas-cli'
-    if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
-        return True
-    # Try then with pip
-    cmd = f'{sys.executable} -m pip install -q --no-cache -U pypas-cli'
-    if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
-        return True
+    try:
+        if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
+            return True
+    except FileNotFoundError:
+        # Try then with pip
+        try:
+            cmd = f'{sys.executable} -m pip install -q --no-cache -U pypas-cli'
+            if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
+                return True
+        except FileNotFoundError:
+            return False
     return False
 
 

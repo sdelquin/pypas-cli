@@ -79,6 +79,7 @@ def upgrade():
         print(sysutils.get_pypas_version())
     else:
         console.error('Error upgrading pypas')
+        console.print('Try it through a packager manager.')
 
 
 @app.command()
