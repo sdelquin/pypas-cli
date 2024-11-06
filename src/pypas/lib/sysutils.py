@@ -6,6 +6,8 @@ from sys import platform
 
 import pkg_resources
 
+from pypas import console
+
 
 class OS:
     LINUX = 1
@@ -37,19 +39,20 @@ def get_open_cmd() -> str:
 
 
 def upgrade_pypas() -> bool:
-    # Try first with uv
-    cmd = 'uv tool upgrade pypas-cli'
-    try:
-        if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
-            return True
-    except FileNotFoundError:
-        # Try then with pip
+    UPGRADE_COMMANDS = [
+        'uv tool upgrade --no-cache pypas-cli',
+        f'{sys.executable} -m pip install -q --no-cache -U pypas-cli',
+        'pipx upgrade pypas-cli',
+    ]
+    for cmd in UPGRADE_COMMANDS:
         try:
-            cmd = f'{sys.executable} -m pip install -q --no-cache -U pypas-cli'
-            if subprocess.run(shlex.split(cmd), capture_output=True).returncode == 0:
-                return True
-        except FileNotFoundError:
-            return False
+            console.debug(cmd, cr=False)
+            subprocess.run(shlex.split(cmd), capture_output=True, check=True)
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            console.fail()
+        else:
+            console.check()
+            return True
     return False
 
 
