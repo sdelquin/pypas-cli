@@ -76,3 +76,8 @@ def get_file_size(path: Path) -> tuple[int, str]:
         usize = size / MB
         unit = 'MB'
     return size, f'{usize:.1f} {unit}'
+
+
+def run_python_file(file='main.py'):
+    cmd = f'{sys.executable} {file}'
+    subprocess.run(shlex.split(cmd))

@@ -244,5 +244,8 @@ Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]
             else:
                 console.error(monad.payload)
 
+    def run(self):
+        sysutils.run_python_file()
+
     def __str__(self):
         return self.slug

@@ -143,5 +143,12 @@ def unauth():
     console.success('You have been successfully unauthenticated')
 
 
+@app.command()
+def run():
+    """Run exercise with given args."""
+    exercise = Exercise.from_config()
+    exercise.run()
+
+
 if __name__ == '__main__':
     app()
