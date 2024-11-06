@@ -80,7 +80,11 @@ class Exercise:
         with zipfile.ZipFile(self.downloaded_zip) as zip_ref:
             zip_ref.extractall(target_dir)
         console.check()
-        os.remove(self.downloaded_zip)
+        try:
+            self.downloaded_zip.unlink(missing_ok=True)
+        except PermissionError:
+            # Windows issue
+            console.debug(f"Temporary file couldn't been removed: '{self.downloaded_zip}'")
         return target_dir
 
     def open_docs(self):
