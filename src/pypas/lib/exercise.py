@@ -177,7 +177,7 @@ Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]
                 if monad.payload:
                     for frame in monad.payload:
                         console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
-                        console.debug(f' └ Frame slug: [bright_green]{frame['slug']}')
+                        console.debug(f' └ Frame slug: [bright_green]{frame["slug"]}')
                         table = CustomTable(
                             'Uploaded',
                             ('Passed', 'success'),
@@ -199,7 +199,7 @@ Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]
                         console.print(table)
                         if verbose:
                             for assignment in frame['assignments']:
-                                msg = f'· {assignment['slug']}'
+                                msg = f'· {assignment["slug"]}'
                                 match assignment['passed']:
                                     case True:
                                         console.check(msg)
@@ -227,7 +227,7 @@ Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]
                 if monad.payload:
                     for frame in monad.payload:
                         console.print(Panel(frame['name'], expand=False, style='bold bright_green'))
-                        console.debug(f' └ Frame slug: [bright_green]{frame['slug']}')
+                        console.debug(f' └ Frame slug: [bright_green]{frame["slug"]}')
                         if frame['exercises']:
                             table = CustomTable('Exercise', ('Topic', 'magenta'))
                             for exercise in frame['exercises']:
