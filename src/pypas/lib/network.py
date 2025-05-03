@@ -15,7 +15,8 @@ def download(url: str, fields: dict, filename: str, save_temp=False, chunk_size=
     # https://gist.github.com/yanqd0/c13ed29e29432e3cf3e7c38467f42f51
     target_file = tempfile.mkstemp(suffix='.zip')[1] if save_temp else filename
     try:
-        response = requests.post(url, data=fields, stream=True)
+        data = {} if all(v is None for v in fields.values()) else fields
+        response = requests.post(url, data=data, stream=True)
         response.raise_for_status()
     except Exception as err:
         return Monad(Monad.ERROR, err)
@@ -25,8 +26,8 @@ def download(url: str, fields: dict, filename: str, save_temp=False, chunk_size=
     with open(target_file, 'wb') as file, Progress(*PROGRESS_ITEMS) as progress:
         filesize = int(response.headers.get('content-length', 0))
         task_id = progress.add_task('download', filename=filename, total=filesize)
-        for data in response.iter_content(chunk_size=chunk_size):
-            size = file.write(data)
+        for chunk in response.iter_content(chunk_size=chunk_size):
+            size = file.write(chunk)
             progress.update(task_id, advance=size)
     return Monad(Monad.SUCCESS, Path(target_file))
 
@@ -63,6 +64,7 @@ def upload(url: str, fields: dict, filepath: Path, filename: str = '') -> Monad:
 
 def post(url: str, payload: dict) -> Monad:
     try:
+        payload = {} if all(v is None for v in payload.values()) else payload
         response = requests.post(url, payload)
         response.raise_for_status()
     except Exception as err:
