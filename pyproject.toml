@@ -5,7 +5,8 @@ build-backend = "hatchling.build"
 [project]
 name = "pypas-cli"
 version = "0.1.17"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 dependencies = [
     'setuptools',
     'typer',
@@ -17,10 +18,7 @@ dependencies = [
     'requests_toolbelt',
     'pytest-dependency',
 ]
-authors = [
-    { email = "sdelquin@gmail.com" },
-    { name = "Sergio Delgado Quintero" },
-]
+authors = [{ email = "sdelquin@gmail.com", name = "Sergio Delgado Quintero" }]
 maintainers = [
     { name = "Sergio Delgado Quintero", email = "sdelquin@gmail.com" },
 ]
@@ -36,6 +34,7 @@ classifiers = [
 [project.urls]
 homepage = "https://pypas.es"
 repository = "https://github.com/sdelquin/pypas-cli"
+issues = "https://github.com/sdelquin/pypas-cli/issues"
 
 [project.scripts]
 pypas = "pypas.main:app"
