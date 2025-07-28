@@ -1,8 +1,8 @@
 # https://docs.astral.sh/uv/guides/package/#publishing-your-package
 
-# Install pypas-cli in development mode
+# Install pypas-cli in development (editing) mode
 install:
-    uv pip install .
+    uv pip install -e .
 
 # Clean temporary files
 clean:
@@ -28,6 +28,10 @@ open-testpypi:
 open-pypi:
     open https://pypi.org/project/pypas-cli/
 
-# Test pypas command
-test args:
-    uv run --with pypas-cli --no-project --refresh-package pypas-cli -- {{args}}
+# Open iPython shell
+sh:
+    uv run ipython
+
+# Bump version: component = [major, minor, patch]
+bump component:
+    uv version --bump {{component}}

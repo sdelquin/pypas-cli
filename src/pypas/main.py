@@ -22,7 +22,7 @@ def init(
     ),
 ):
     if version:
-        print(sysutils.get_pypas_version())
+        print(sysutils.get_package_info())
 
 
 @app.command()

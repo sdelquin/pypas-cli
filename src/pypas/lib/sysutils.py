@@ -1,10 +1,9 @@
 import shlex
 import subprocess
 import sys
+from importlib.metadata import PackageNotFoundError, distribution
 from pathlib import Path
 from sys import platform
-
-import pkg_resources
 
 from pypas import console
 
@@ -56,9 +55,15 @@ def upgrade_pypas() -> bool:
     return False
 
 
-def get_pypas_version():
-    dist = pkg_resources.get_distribution('pypas-cli')
-    return f'{dist.key} {dist.version} from {dist.location}'
+def get_package_info(package: str = 'pypas-cli') -> str:
+    try:
+        dist = distribution(package)
+        name = dist.metadata['Name']
+        version = dist.version
+        location = dist.locate_file('')
+        return f'Package: {name}\nVersion: {version}\nPath: {location}'
+    except PackageNotFoundError:
+        return "Package '{package}' is not already installed."
 
 
 def get_file_size(path: Path) -> tuple[int, str]:

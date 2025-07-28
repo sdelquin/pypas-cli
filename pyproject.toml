@@ -1,6 +1,6 @@
 [project]
 name = "pypas-cli"
-version = "0.1.17"
+version = "0.1.18"
 description = "Python Practical Assignments"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -34,3 +34,8 @@ pypas = "pypas.main:app"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[dependency-groups]
+dev = [
+    "ipython>=8.37.0",
+]
