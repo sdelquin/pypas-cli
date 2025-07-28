@@ -24,7 +24,8 @@ def default(
 ):
     if version:
         print(sysutils.get_package_info())
-    else:
+    # https://typer.tiangolo.com/tutorial/commands/context/#exclusive-executable-callback
+    elif ctx.invoked_subcommand is None:
         typer.echo(ctx.get_help())
 
 
