@@ -14,11 +14,11 @@ build: clean
 
 # Upload to Test PyPI
 upload-test: build
-    uv publish -t `testpypi-token` --publish-url "https://test.pypi.org/legacy/"
+    uv publish -t $TESTPYPI_TOKEN --publish-url "https://test.pypi.org/legacy/"
 
 # Upload to PyPI
 upload: build
-    uv publish -t `pypi-token`
+    uv publish -t $PYPI_TOKEN
 
 # Open project url at Test PyPI
 open-testpypi:
