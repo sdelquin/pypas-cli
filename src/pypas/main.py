@@ -7,13 +7,14 @@ from pypas.lib.decorators import auth_required, inside_exercise
 app = typer.Typer(
     add_completion=False,
     help='pypas ⚘ Python Practical Assignments',
-    no_args_is_help=True,
     pretty_exceptions_enable=False,
 )
 
 
+# https://peq.es/8ff0b0
 @app.callback(invoke_without_command=True)
-def init(
+def default(
+    ctx: typer.Context,
     version: bool = typer.Option(
         False,
         '--version',
@@ -23,6 +24,8 @@ def init(
 ):
     if version:
         print(sysutils.get_package_info())
+    else:
+        typer.echo(ctx.get_help())
 
 
 @app.command()
