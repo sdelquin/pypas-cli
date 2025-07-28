@@ -1,6 +1,6 @@
 [project]
 name = "pypas-cli"
-version = "0.1.18"
+version = "0.1.19"
 description = "Python Practical Assignments"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -20,7 +20,6 @@ maintainers = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
@@ -36,6 +35,4 @@ pypas = "pypas.main:app"
 pythonpath = ["src"]
 
 [dependency-groups]
-dev = [
-    "ipython>=8.37.0",
-]
+dev = ["ipython>=8.37.0"]
