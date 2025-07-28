@@ -1,5 +1,6 @@
 .venv
-dist
+dist/
+build/
 *.egg-info
 *.pyc
 .python-version

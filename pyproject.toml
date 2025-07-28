@@ -1,30 +1,23 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "pypas-cli"
 version = "0.1.17"
-license = "MIT"
-license-files = ["LICEN[CS]E*"]
+description = "Python Practical Assignments"
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
-    'setuptools',
-    'typer',
-    'prettyconf',
-    'requests',
-    'rich',
-    'pytest',
-    'toml',
-    'requests_toolbelt',
-    'pytest-dependency',
+    "prettyconf>=2.3.0",
+    "pytest>=8.4.1",
+    "pytest-dependency>=0.6.0",
+    "requests>=2.32.4",
+    "requests-toolbelt>=1.0.0",
+    "rich>=14.1.0",
+    "toml>=0.10.2",
+    "typer>=0.16.0",
 ]
 authors = [{ email = "sdelquin@gmail.com", name = "Sergio Delgado Quintero" }]
 maintainers = [
     { name = "Sergio Delgado Quintero", email = "sdelquin@gmail.com" },
 ]
-description = "Python Practical Assignments"
-readme = "README.md"
-requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -41,6 +34,3 @@ pypas = "pypas.main:app"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/pypas"]
