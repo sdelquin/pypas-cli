@@ -2,6 +2,6 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
-## Unreleased
+## 0.2.0
 
-Released XXXX-XX-XX
+- Add option to pull assignments (from single exercise or whole frame).

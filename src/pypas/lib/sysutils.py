@@ -1,6 +1,9 @@
+import fnmatch
+import os
 import shlex
 import subprocess
 import sys
+import zipfile
 from importlib.metadata import PackageNotFoundError, distribution
 from pathlib import Path
 from sys import platform
@@ -86,3 +89,26 @@ def get_file_size(path: Path) -> tuple[int, str]:
 def run_python_file(file='main.py'):
     cmd = f'{sys.executable} {file}'
     subprocess.run(shlex.split(cmd))
+
+
+def zip(path: Path, zipname: str, ignored_patterns: list[str] = None) -> Path:
+    """Zip the contents of a directory, excluding specified patterns."""
+    if ignored_patterns is None:
+        ignored_patterns = []
+
+    zip_path = path / zipname
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, _, files in os.walk(path):
+            for file in files:
+                if not any(fnmatch.fnmatch(file, pattern) for pattern in ignored_patterns):
+                    file_path = Path(root) / file
+                    zipf.write(file_path, file_path.relative_to(path))
+    return zip_path
+
+
+def unzip(zip_path: Path, extract_to: Path | None = None) -> Path:
+    """Unzip a file to a specified directory or the current directory."""
+    extract_to = extract_to or Path.cwd()
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(extract_to)
+    return extract_to

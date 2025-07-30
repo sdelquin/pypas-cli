@@ -249,3 +249,13 @@ Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]
 
     def __str__(self):
         return self.slug
+
+    @staticmethod
+    def pull(item_slug: str, token: str) -> Path | None:
+        url = settings.PYPAS_PULL_URLPATH.format(item_slug=item_slug)
+        console.debug(f'Pulling items from: [italic]{url}')
+        if monad := network.download(url, dict(token=token), f'{item_slug}.zip', save_temp=True):
+            return monad.payload
+        else:
+            console.error(monad.payload)
+            return None

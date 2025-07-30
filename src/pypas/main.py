@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import typer
 from rich.prompt import Confirm
 
@@ -152,6 +154,24 @@ def run():
     """Run exercise with given args."""
     exercise = Exercise.from_config()
     exercise.run()
+
+
+@app.command()
+def pull(
+    item_slug: str = typer.Argument(help='Slug of exercise or frame.'),
+):
+    """Pull (download) specific assignment or all frame assignments."""
+    if (dst_folder := Path(item_slug)).exists():
+        console.warning(f'Folder ./{dst_folder} already exists!')
+        console.info(
+            '[italic]If continue, files coming from server will [red]OVERWRITE[/red] your existing files'
+        )
+        if not Confirm.ask('Continue', default=False):
+            return
+    config = Config()
+    if file := Exercise.pull(item_slug, config.get('token')):
+        folder = sysutils.unzip(file, extract_to=dst_folder)
+        console.info(f'Assignment(s) are available at [note]./{folder.name}[/note] [success]✔')
 
 
 if __name__ == '__main__':
