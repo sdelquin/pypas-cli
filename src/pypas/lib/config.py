@@ -45,3 +45,13 @@ class Config:
     @staticmethod
     def unauth():
         settings.MAIN_CONFIG_FILE.unlink(missing_ok=True)
+
+    @staticmethod
+    def find_nested_config(
+        config_file: str = settings.EXERCISE_CONFIG_FILE, relative_to_cwd: bool = False
+    ) -> Path | None:
+        base = Path('.').resolve()
+        for path in base.rglob(config_file):
+            if (p := path.parent) != base:
+                return p if not relative_to_cwd else p.relative_to(base)
+        return None

@@ -41,7 +41,13 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
         )
         if not Confirm.ask('Continue', default=False):
             return
-    config = Config()
+    if (config := Config()).exists():
+        console.warning('Current folder seems to be a pypas exercise.')
+        console.info(
+            '[italic]If continue, files coming from server will [red]MESS[/red] your existing files'
+        )
+        if not Confirm.ask('Continue', default=False):
+            return
     if exercise.download(config.get('token')):
         exercise.unzip()
         console.info(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
@@ -101,9 +107,16 @@ def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase ve
 @inside_exercise
 def put():
     """Put (upload) exercise."""
+    config = Config()
+    if nested_config_path := config.find_nested_config(relative_to_cwd=True):
+        console.warning(
+            f'Another exercise seems to be nested inside current folder: ./{nested_config_path}'
+        )
+        console.info('[italic]If continue, upload will [red]BREAK[/red] testing[/italic]')
+        if not Confirm.ask('Continue', default=False):
+            return
     exercise = Exercise.from_config()
     zipfile = exercise.zip(to_tmp_dir=True)
-    config = Config()
     exercise.upload(zipfile, config['token'])
 
 
