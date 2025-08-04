@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.2.3
+
+- Change the way to display payload on "put" request (exercise).
+
 ## 0.2.2
 
 - Check presence of config file to warn about get & put operations.

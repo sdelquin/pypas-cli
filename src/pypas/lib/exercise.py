@@ -111,7 +111,7 @@ class Exercise:
                 url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
             ):
                 console.success('Exercise was sucessfully uploaded')
-                console.debug(f'(to frame [b]{monad.payload}[/b])')
+                console.debug(monad.payload)
             else:
                 console.error(monad.payload)
             zipfile.unlink(missing_ok=True)
