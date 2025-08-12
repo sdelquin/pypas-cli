@@ -41,13 +41,14 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
         )
         if not Confirm.ask('Continue', default=False):
             return
-    if (config := Config()).exists():
+    if Config.local_config_exists():
         console.warning('Current folder seems to be a pypas exercise.')
         console.info(
             '[italic]If continue, files coming from server will [red]MESS[/red] your existing files'
         )
         if not Confirm.ask('Continue', default=False):
             return
+    config = Config()
     if exercise.download(config.get('token')):
         exercise.unzip()
         console.info(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')

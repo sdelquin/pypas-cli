@@ -55,3 +55,7 @@ class Config:
             if (p := path.parent) != base:
                 return p if not relative_to_cwd else p.relative_to(base)
         return None
+
+    @staticmethod
+    def local_config_exists(config_file: str = settings.EXERCISE_CONFIG_FILE) -> bool:
+        return Path(config_file).exists()

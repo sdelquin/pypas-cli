@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.2.4
+
+- Fix bug when checking if current folder seems to be an exercise.
+
 ## 0.2.3
 
 - Change the way to display payload on "put" request (exercise).
