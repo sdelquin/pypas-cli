@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.2.5
+
+- Allow to specify the testing command from exercise at .pypas.toml.
+
 ## 0.2.4
 
 - Fix bug when checking if current folder seems to be an exercise.

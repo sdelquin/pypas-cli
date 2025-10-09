@@ -3,11 +3,11 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
 
-import pytest
 import toml
 from rich.panel import Panel
 
@@ -117,13 +117,9 @@ class Exercise:
             zipfile.unlink(missing_ok=True)
 
     def test(self):
-        if Path('requirements.txt').exists():
-            console.print("""[red]Attention[/red]
-A [i]requirements.txt[/i] file is detected in the current directory!
-pypas is not able to directly test this exercise.
-Please [i]install dependencies[/i] (usually inside a virtualenv) and run: [note]pytest""")
-        else:
-            pytest.main(args=[])
+        test_cmd = self.config.get('test_cmd', 'pytest')
+        console.info(f'Running tests with: [note]{test_cmd}[/note]')
+        subprocess.run(test_cmd, shell=True)
 
     @classmethod
     def from_config(cls) -> Exercise:
