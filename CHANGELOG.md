@@ -2,6 +2,11 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.2.6
+
+- Fix issue with pypas test.
+- Allow passing arguments to pypas test.
+
 ## 0.2.5
 
 - Allow to specify the testing command from exercise at .pypas.toml.
