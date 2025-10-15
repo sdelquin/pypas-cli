@@ -8,6 +8,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import pytest
 import toml
 from rich.panel import Panel
 
@@ -116,10 +117,13 @@ class Exercise:
                 console.error(monad.payload)
             zipfile.unlink(missing_ok=True)
 
-    def test(self):
-        test_cmd = self.config.get('test_cmd', 'pytest')
-        console.info(f'Running tests with: [note]{test_cmd}[/note]')
-        subprocess.run(test_cmd, shell=True)
+    def test(self, args: list[str]):
+        if test_cmd := self.config.get('test_cmd'):
+            test_cmd = f'{test_cmd} {" ".join(args)}' if args else test_cmd
+            console.info(f'Running tests with: [note]{test_cmd}[/note]')
+            subprocess.run(test_cmd, shell=True)
+        else:
+            pytest.main(args=args)
 
     @classmethod
     def from_config(cls) -> Exercise:
@@ -142,30 +146,6 @@ class Exercise:
         else:
             console.check()
             return True
-
-    @staticmethod
-    def pytest_help():
-        console.info('[note]pypas test[/note] is just a wrapper for [note]pytest[/note]')
-        console.info(
-            'You can find documentation on how to invoke pytest at: [warning]https://docs.pytest.org/en/latest/how-to/usage.html'
-        )
-        console.debug('Here you have some of the more useful options:')
-
-        table = CustomTable(('Command', 'quote'), 'Description')
-        table.add_row('pytest -x', 'Exit instantly on first error or failed test.')
-        table.add_row(
-            'pytest -k <expression>',
-            'Only run tests which match the given substring expression.',
-        )
-        table.add_row('pytest -v', 'Increase verbosity.')
-        table.add_row('pytest -q', 'Decrease verbosity.')
-        table.add_row('pytest --lf', 'Rerun only the tests that failed at the last run.')
-        table.add_row(
-            'pytest --sw',
-            'Exit on test failure and continue from last failing test next time.',
-        )
-        table.add_row('pytest <path/to>::<test>', 'Run specific test.')
-        console.print(table)
 
     @staticmethod
     def log(token: str, frame_ref: str, verbose: bool = False) -> None:

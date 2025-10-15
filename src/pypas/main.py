@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import typer
 from rich.prompt import Confirm
@@ -121,17 +122,14 @@ def put():
     exercise.upload(zipfile, config['token'])
 
 
-@app.command()
+@app.command(context_settings={'ignore_unknown_options': True})
 @inside_exercise
 def test(
-    help: bool = typer.Option(False, '--help', '-h', help='Show test options.'),
+    args: List[str] = typer.Argument(None, help='Arguments passed to test tool'),
 ):
     """Test exercise."""
     exercise = Exercise.from_config()
-    if help:
-        exercise.pytest_help()
-    else:
-        exercise.test()
+    exercise.test(args or [])
 
 
 @app.command()
