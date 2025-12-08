@@ -5,6 +5,7 @@ description = "Python Practical Assignments"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "pathspec>=0.12.1",
     "prettyconf>=2.3.0",
     "pytest>=8.4.1",
     "pytest-dependency>=0.6.0",

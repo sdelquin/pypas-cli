@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import fnmatch
 import os
 import shutil
 import subprocess
@@ -8,6 +7,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+import pathspec
 import pytest
 import toml
 from rich.panel import Panel
@@ -57,14 +57,16 @@ class Exercise:
 
     def zip(self, to_tmp_dir: bool = False, verbose: bool = False) -> Path:
         console.info('Compressing exercise contents', cr=verbose)
-        exclude_patterns = self.config.get('exclude_from_zip', [])
+        exclude_patterns = pathspec.PathSpec.from_lines(
+            'gitwildmatch', self.config.get('exclude_from_zip', [])
+        )
         zip_path = tempfile.mkstemp(suffix='.zip')[1] if to_tmp_dir else self.zipname
         zip_file = Path(zip_path)
         with zipfile.ZipFile(zip_file, 'w') as archive:
             for file in self.files:
                 if file.name == self.zipname:
                     continue
-                if any(fnmatch.fnmatch(str(file), pattern) for pattern in exclude_patterns):
+                if exclude_patterns.match_file(str(file)):
                     if verbose:
                         console.warning(f'Ignoring {file}')
                     continue
@@ -93,15 +95,14 @@ class Exercise:
         os.system(f'{sysutils.get_open_cmd()} docs/README.pdf')
 
     def update(self, src_dir: Path, backup: bool = True):
-        backup_files = self.config.get('backup_on_update', [])
-        for file in src_dir.glob('**/*'):
-            if file.is_file():
+        backup_files = pathspec.PathSpec.from_lines(
+            'gitwildmatch', self.config.get('backup_on_update', [])
+        )
+        for dirpath, dirs, files in os.walk(src_dir):
+            for filename in files:
+                file = Path(dirpath) / filename
                 rel_file = file.relative_to(src_dir)
-                if (
-                    backup
-                    and rel_file.exists()
-                    and any(fnmatch.fnmatch(str(rel_file), pattern) for pattern in backup_files)
-                ):
+                if backup and rel_file.exists() and backup_files.match_file(str(rel_file)):
                     backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
                     console.debug(f'Backup {rel_file} → {backup_file}')
                     shutil.copy(rel_file, backup_file)
