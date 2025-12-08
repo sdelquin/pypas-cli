@@ -2,6 +2,11 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.3.0
+
+- Change config param from "todo" to "backup_on_update".
+- Add config param "exclude_from_zip".
+
 ## 0.2.6
 
 - Fix issue with pypas test.
