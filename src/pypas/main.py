@@ -71,6 +71,7 @@ def update(
     ),
 ):
     """Update exercise."""
+    # Backup patterns follow fnmatch syntax: https://docs.python.org/3/library/fnmatch.html
     config = Config()
     if (exercise := Exercise.from_config()).download(config.get('token')):
         dir = exercise.unzip(to_tmp_dir=True)
