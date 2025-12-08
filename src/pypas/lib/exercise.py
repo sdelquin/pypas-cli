@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import glob
 import os
 import re
 import shutil
@@ -7,6 +8,7 @@ import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
+from typing import Iterator
 
 import pytest
 import toml
@@ -41,6 +43,13 @@ class Exercise:
         for item in Path('.').glob('**/*'):
             if item.is_file():
                 yield item
+
+    @property
+    def backup_on_update(self) -> Iterator[str]:
+        for b in self.config.get('backup_on_update', []):
+            globs = glob.glob(b, root_dir='.')
+            for g in globs:
+                yield g
 
     def folder_exists(self) -> bool:
         return self.folder.exists()
@@ -92,10 +101,11 @@ class Exercise:
         os.system(f'{sysutils.get_open_cmd()} docs/README.pdf')
 
     def update(self, src_dir: Path, backup: bool = True):
+        backup_files = list(self.backup_on_update)
         for file in src_dir.glob('**/*'):
             if file.is_file():
                 rel_file = file.relative_to(src_dir)
-                if backup and rel_file.exists() and str(rel_file) in self.config.get('todo', []):
+                if backup and rel_file.exists() and str(rel_file) in backup_files:
                     backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
                     console.debug(f'Backup {rel_file} → {backup_file}')
                     shutil.copy(rel_file, backup_file)
