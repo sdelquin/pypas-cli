@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.3.1
+
+- Use pathspec for exercise zip and update.
+
 ## 0.3.0
 
 - Change config param from "todo" to "backup_on_update".
