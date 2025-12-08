@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import fnmatch
 import glob
 import os
-import re
 import shutil
 import subprocess
 import tempfile
@@ -66,13 +66,14 @@ class Exercise:
 
     def zip(self, to_tmp_dir: bool = False, verbose: bool = False) -> Path:
         console.info('Compressing exercise contents', cr=verbose)
+        exclude_patterns = self.config.get('exclude_from_zip', [])
         zip_path = tempfile.mkstemp(suffix='.zip')[1] if to_tmp_dir else self.zipname
         zip_file = Path(zip_path)
         with zipfile.ZipFile(zip_file, 'w') as archive:
             for file in self.files:
                 if file.name == self.zipname:
                     continue
-                if re.search(settings.ZIP_IGNORED_PATTERNS_RE, str(file)):
+                if any(fnmatch.fnmatch(str(file), pattern) for pattern in exclude_patterns):
                     if verbose:
                         console.warning(f'Ignoring {file}')
                     continue

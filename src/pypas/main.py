@@ -98,6 +98,7 @@ def upgrade():
 @inside_exercise
 def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
     """Compress exercise contents."""
+    # Excluded patterns follow fnmatch syntax: https://docs.python.org/3/library/fnmatch.html
     exercise = Exercise.from_config()
     zipfile = exercise.zip(verbose=verbose)
     size, str_size = sysutils.get_file_size(zipfile)
