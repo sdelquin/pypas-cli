@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.4.2
+
+- Omit version checking on upgrade.
+
 ## 0.4.1
 
 - Omit warning when getting an exercise on the same folder as main config file.
