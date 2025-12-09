@@ -2,7 +2,10 @@
 
 # Install pypas-cli in development (editing) mode
 install:
+    #!/usr/bin/env bash
     uv pip install -e .
+    echo
+    echo "✔ Use 'uv run pypas' to run the CLI tool."
 
 # Clean temporary files
 clean:
