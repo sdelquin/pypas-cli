@@ -2,6 +2,11 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.4.1
+
+- Omit warning when getting an exercise on the same folder as main config file.
+- Check if file contents are distinct when updating an exercise.
+
 ## 0.4.0
 
 - Check pypas-cli version before any command execution.
