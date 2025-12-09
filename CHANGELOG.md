@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.4.0
+
+- Check pypas-cli version before any command execution.
+
 ## 0.3.1
 
 - Use pathspec for exercise zip and update.
