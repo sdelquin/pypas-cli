@@ -92,7 +92,6 @@ def auth(token: str = typer.Argument(help='Access token')):
 
 
 @app.command()
-@check_version
 def upgrade():
     """Upgrade pypas-cli from PyPI."""
     if sysutils.upgrade_pypas():
