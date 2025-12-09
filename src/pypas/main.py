@@ -5,7 +5,7 @@ import typer
 from rich.prompt import Confirm
 
 from pypas import Config, Exercise, User, console, sysutils
-from pypas.lib.decorators import auth_required, inside_exercise
+from pypas.lib.decorators import auth_required, check_version, inside_exercise
 
 app = typer.Typer(
     add_completion=False,
@@ -26,6 +26,7 @@ def default(
     ),
 ):
     if version:
+        sysutils.handle_package_version()
         print(sysutils.get_package_info())
     # https://typer.tiangolo.com/tutorial/commands/context/#exclusive-executable-callback
     elif ctx.invoked_subcommand is None:
@@ -33,6 +34,7 @@ def default(
 
 
 @app.command()
+@check_version
 def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
     """Get (download) exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
@@ -57,6 +59,7 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
 
 @app.command()
 @inside_exercise
+@check_version
 def doc():
     """Open documentation for exercise."""
     exercise = Exercise.from_config()
@@ -65,6 +68,7 @@ def doc():
 
 @app.command()
 @inside_exercise
+@check_version
 def update(
     force: bool = typer.Option(
         False, '--force', '-f', help='Force update and omit backup of existing files'
@@ -79,6 +83,7 @@ def update(
 
 
 @app.command()
+@check_version
 def auth(token: str = typer.Argument(help='Access token')):
     """Authenticate at pypas.es (token required)."""
     if User(token).authenticate():
@@ -87,6 +92,7 @@ def auth(token: str = typer.Argument(help='Access token')):
 
 
 @app.command()
+@check_version
 def upgrade():
     """Upgrade pypas-cli from PyPI."""
     if sysutils.upgrade_pypas():
@@ -97,6 +103,7 @@ def upgrade():
 
 @app.command()
 @inside_exercise
+@check_version
 def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
     """Compress exercise contents."""
     # Excluded patterns follow fnmatch syntax: https://docs.python.org/3/library/fnmatch.html
@@ -109,6 +116,7 @@ def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase ve
 @app.command()
 @auth_required
 @inside_exercise
+@check_version
 def put():
     """Put (upload) exercise."""
     config = Config()
@@ -126,6 +134,7 @@ def put():
 
 @app.command(context_settings={'ignore_unknown_options': True})
 @inside_exercise
+@check_version
 def test(
     args: List[str] = typer.Argument(None, help='Arguments passed to test tool'),
 ):
@@ -135,6 +144,7 @@ def test(
 
 
 @app.command()
+@check_version
 def log(
     frame: str = typer.Option('', '--frame', '-f', help='Filter by frame.'),
     verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.'),
@@ -145,6 +155,7 @@ def log(
 
 
 @app.command()
+@check_version
 def list(
     frame: str = typer.Option('', '--frame', '-f', help='Filter by frame.'),
     primary_topic: str = typer.Option('', '--ptopic', '-p', help='Filter by primary topic.'),
@@ -156,6 +167,7 @@ def list(
 
 
 @app.command()
+@check_version
 def unauth():
     """Unauthenticate from pypas.es (clear token)."""
     config = Config()
@@ -164,6 +176,7 @@ def unauth():
 
 
 @app.command()
+@check_version
 def run():
     """Run exercise with given args."""
     exercise = Exercise.from_config()
@@ -171,6 +184,7 @@ def run():
 
 
 @app.command()
+@check_version
 def pull(
     item_slug: str = typer.Argument(help='Slug of exercise or frame.'),
 ):

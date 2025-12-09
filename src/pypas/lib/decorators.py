@@ -1,6 +1,8 @@
 import functools
 import os
 
+from pypas import sysutils
+
 from .config import Config
 from .console import console
 
@@ -26,5 +28,14 @@ def auth_required(func):
         else:
             console.error('You must be authenticated before uploading any exercise')
             console.info('Run [note]pypas auth --help[/note] for more information.')
+
+    return wrapper
+
+
+def check_version(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        sysutils.handle_package_version()
+        return func(*args, **kwargs)
 
     return wrapper
