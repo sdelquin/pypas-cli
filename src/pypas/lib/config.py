@@ -57,5 +57,9 @@ class Config:
         return None
 
     @staticmethod
-    def local_config_exists(config_file: str = settings.EXERCISE_CONFIG_FILE) -> bool:
-        return Path(config_file).exists()
+    def local_config_exists(
+        config_file: str = settings.EXERCISE_CONFIG_FILE, ignore_main_config: bool = False
+    ) -> bool:
+        return Path(config_file).exists() and (
+            ignore_main_config or Path('.').resolve() != settings.MAIN_CONFIG_FILE.parent.resolve()
+        )
