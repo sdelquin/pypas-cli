@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import filecmp
 import os
 import shutil
 import subprocess
@@ -102,7 +103,11 @@ class Exercise:
             for filename in files:
                 file = Path(dirpath) / filename
                 rel_file = file.relative_to(src_dir)
-                if backup and rel_file.exists() and backup_files.match_file(str(rel_file)):
+                if (
+                    backup
+                    and backup_files.match_file(str(rel_file))
+                    and not filecmp.cmp(rel_file, file, shallow=False)
+                ):
                     backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
                     console.debug(f'Backup {rel_file} → {backup_file}')
                     shutil.copy(rel_file, backup_file)
