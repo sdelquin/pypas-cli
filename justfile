@@ -5,7 +5,7 @@ install:
     #!/usr/bin/env bash
     uv pip install -e .
     echo
-    echo "✔ Use 'uv run pypas' to run the CLI tool."
+    echo "✔ Use 'uv run pypas' or alias 'pypas-dev' to run the CLI tool."
 
 # Clean temporary files
 clean:
