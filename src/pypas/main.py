@@ -27,7 +27,7 @@ def default(
 ):
     if version:
         sysutils.handle_package_version()
-        print(sysutils.get_package_info())
+        sysutils.show_package_info()
     # https://typer.tiangolo.com/tutorial/commands/context/#exclusive-executable-callback
     elif ctx.invoked_subcommand is None:
         typer.echo(ctx.get_help())
@@ -94,10 +94,7 @@ def auth(token: str = typer.Argument(help='Access token')):
 @app.command()
 def upgrade():
     """Upgrade pypas-cli from PyPI."""
-    if sysutils.upgrade_pypas():
-        print(sysutils.get_package_info())
-    else:
-        console.error('Error upgrading pypas')
+    sysutils.handle_upgrade_pypas()
 
 
 @app.command()

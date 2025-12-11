@@ -73,10 +73,17 @@ def get_package_data(package: str = 'pypas-cli') -> dict[str, str]:
         return {}
 
 
-def get_package_info(package: str = 'pypas-cli') -> str:
+def show_package_info(package: str = 'pypas-cli') -> None:
     if data := get_package_data(package):
-        return f'Package: {data.get("name")}\nVersion: {data.get("version")}\nPath: {data.get("location")}'
-    return "Package '{package}' is not already installed."
+        console.print(
+            dedent(f"""\
+            Package: {data.get('name')}
+            Version: [note]{data.get('version')}[/note]
+            Path: {data.get('location')}\
+        """)
+        )
+    else:
+        console.error(f"Package '{package}' is not yet installed")
 
 
 def get_latest_package_version(package: str = 'pypas-cli') -> str | None:
@@ -152,3 +159,25 @@ def unzip(zip_path: Path, extract_to: Path | None = None) -> Path:
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_to)
     return extract_to
+
+
+def handle_upgrade_pypas():
+    latest_version = get_latest_package_version()
+    package_data = get_package_data()
+    current_version = package_data.get('version')
+    # current_version = '0.0.0'  # Temporary hardcoded version for testing
+    if latest_version and current_version:
+        if latest_version != current_version:
+            if upgrade_pypas():
+                console.success(
+                    f'Upgraded pypas-cli from [note]v{current_version}[/note] to [note]v{latest_version}[/note]'
+                )
+            else:
+                console.error('Error upgrading pypas')
+        else:
+            console.success(
+                f"You're on the latest version of pypas-cli: [note]v{current_version}[/note]",
+                emphasis=False,
+            )
+    else:
+        console.error('Could not determine pypas-cli version information')
