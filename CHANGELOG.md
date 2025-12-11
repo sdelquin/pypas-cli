@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.4.3
+
+- Improve upgrade handling.
+
 ## 0.4.2
 
 - Omit version checking on upgrade.
