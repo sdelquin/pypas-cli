@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
+from typing import List
 
 import pathspec
 import pytest
@@ -101,18 +102,22 @@ class Exercise:
         )
         for dirpath, dirs, files in os.walk(src_dir):
             for filename in files:
-                file = Path(dirpath) / filename
-                rel_file = file.relative_to(src_dir)
-                if (
-                    backup
-                    and backup_files.match_file(str(rel_file))
-                    and not filecmp.cmp(rel_file, file, shallow=False)
-                ):
-                    backup_file = rel_file.with_suffix(rel_file.suffix + '.bak')
-                    console.debug(f'Backup {rel_file} → {backup_file}')
-                    shutil.copy(rel_file, backup_file)
-                rel_file.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(file, rel_file)
+                incoming_file = Path(dirpath) / filename
+                current_file = incoming_file.relative_to(src_dir)
+                if current_file.exists():
+                    if filecmp.cmp(current_file, incoming_file, shallow=False):
+                        continue
+                    console.info(f'[highlight][U][/highlight] {current_file}', cr=False)
+                    if backup:
+                        if backup_files.match_file(str(current_file)):
+                            backup_file = current_file.with_suffix(current_file.suffix + '.bak')
+                            console.debug(f' (Backup {current_file} → {backup_file})', cr=False)
+                            shutil.copy(current_file, backup_file)
+                    console.info('')
+                else:
+                    console.info(f'[highlight][A][/highlight] {current_file}')
+                current_file.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(incoming_file, current_file)
         shutil.rmtree(src_dir, ignore_errors=True)
         console.success('Exercise has been updated to the last version')
 
@@ -129,7 +134,7 @@ class Exercise:
                 console.error(monad.payload)
             zipfile.unlink(missing_ok=True)
 
-    def test(self, args: list[str]):
+    def test(self, args: List[str]):
         if test_cmd := self.config.get('test_cmd'):
             test_cmd = f'{test_cmd} {" ".join(args)}' if args else test_cmd
             console.info(f'Running tests with: [note]{test_cmd}[/note]')

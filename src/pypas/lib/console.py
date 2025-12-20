@@ -51,7 +51,7 @@ class CustomConsole(Console):
             msg = f'{msg} '
         self.print(f'{msg}[error]✘')
 
-    def resolve(self, msg: str = '', status: bool = None) -> None:
+    def resolve(self, msg: str = '', status=None) -> None:
         match status:
             case True:
                 self.check(msg)
