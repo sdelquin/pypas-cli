@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.4.4
+
+- Log changes of exercise update.
+
 ## 0.4.3
 
 - Improve upgrade handling.
