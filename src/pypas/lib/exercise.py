@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import zipfile
 from pathlib import Path
+from textwrap import dedent
 from typing import List
 
 import pathspec
@@ -23,6 +24,7 @@ from .console import CustomTable, console
 class Exercise:
     def __init__(self, exercise_slug: str):
         self.slug = exercise_slug
+        self._latest_version = None
 
     @property
     def zipname(self) -> str:
@@ -119,7 +121,10 @@ class Exercise:
                 current_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(incoming_file, current_file)
         shutil.rmtree(src_dir, ignore_errors=True)
-        console.success('Exercise has been updated to the last version')
+        console.success(
+            f'Updated [i]{self}[/i] from [note]{self.version}[/note] to [note]{self.latest_version}[/note]',
+            emphasis=True,
+        )
 
     def upload(self, zipfile: Path, token: str):
         if self.check_zipfile_size(zipfile):
@@ -252,3 +257,51 @@ class Exercise:
         else:
             console.error(monad.payload)
             return None
+
+    @property
+    def latest_version(self) -> str | None:
+        if self._latest_version:
+            return self._latest_version
+        url = settings.PYPAS_EXERCISE_INFO_URLPATH.format(exercise_slug=self.slug)
+        if monad := network.get(url):
+            self._latest_version = monad.payload.get('version')
+            return self._latest_version
+        else:
+            console.error(monad.payload)
+            return None
+
+    @property
+    def version(self) -> str:
+        return str(self.config.get('version', settings.DEFAULT_EXERCISE_VERSION))
+
+    def is_up_to_date(self) -> bool:
+        latest_version = self.latest_version
+        current_version = self.version
+        return latest_version == current_version
+
+    def handle_exercise_version(
+        self,
+        confirm: bool = False,
+        confirm_suffix: str = '',
+        env_var: str = settings.PYPAS_SKIP_VERSION_CHECK_VAR,
+    ) -> bool:
+        """Check if there's a new version of the exercise available.
+        Returns True if the user wants to continue with the old version.
+        """
+        if os.environ.get(env_var) == '1':
+            return True
+        latest_version = self.latest_version
+        current_version = self.version
+        if latest_version and current_version and latest_version != current_version:
+            console.warning(
+                dedent(f"""
+                A new version of [bold]{self.slug}[/bold] is available: [note]{latest_version}[/note] (you have [note]{current_version}[/note])
+                You'll probably get errors if you continue using an old version.
+                Run [note]pypas update[/note] to update to the latest version [dim](https://pypas.es/docs/#actualizar-un-ejercicio)[/dim].
+                [quote][dim]If you want to disable this warning, set an environment variable: [note]{env_var}=1[/note][/quote][/dim]
+            """)
+            )
+            if confirm:
+                confirm_suffix = f' {confirm_suffix}' if not confirm_suffix.startswith(' ') else ''
+                return console.confirm(f'Continue{confirm_suffix}?')
+        return True

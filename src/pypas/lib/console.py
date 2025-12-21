@@ -9,6 +9,7 @@ from rich.progress import (
     TimeRemainingColumn,
     TransferSpeedColumn,
 )
+from rich.prompt import Confirm
 from rich.table import Table
 from rich.theme import Theme
 
@@ -69,13 +70,16 @@ class CustomConsole(Console):
         self.print(msg, *args, style=style, end=end, **kwargs)
 
     info = functools.partialmethod(message, style='info')
-    error = functools.partialmethod(message, style='error', emphasis=True)
-    success = functools.partialmethod(message, style='success', emphasis=True)
+    error = functools.partialmethod(message, style='error')
+    success = functools.partialmethod(message, style='success')
     warning = functools.partialmethod(message, style='warning')
     debug = functools.partialmethod(message, style='dim')
     quote = functools.partialmethod(message, style='quote')
     note = functools.partialmethod(message, style='note')
     highlight = functools.partialmethod(message, style='highlight')
+
+    def confirm(self, prompt_text: str, default: bool = True, **kwargs) -> bool:
+        return Confirm.ask(prompt_text, default=default, **kwargs)
 
 
 class CustomTable(Table):

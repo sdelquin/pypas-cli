@@ -97,10 +97,15 @@ def get_latest_package_version(package: str = 'pypas-cli') -> str | None:
 
 
 def handle_package_version(
-    package: str = 'pypas-cli', env_var: str = settings.PYPAS_SKIP_VERSION_CHECK_VAR
-) -> None:
+    package: str = 'pypas-cli',
+    confirm: bool = False,
+    confirm_suffix: str = '',
+    env_var: str = settings.PYPAS_SKIP_VERSION_CHECK_VAR,
+) -> bool:
+    """Check if there's a new version of the package available.
+    Returns True if the user wants to continue with the old version."""
     if os.environ.get(env_var) == '1':
-        return
+        return True
     latest_version = get_latest_package_version(package)
     package_data = get_package_data(package)
     current_version = package_data.get('version')
@@ -108,12 +113,16 @@ def handle_package_version(
     if latest_version and current_version and latest_version != current_version:
         console.warning(
             dedent(f"""
-            A new version of pypas-cli is available: [note]{latest_version}[/note] (you have [note]{current_version}[/note])
+            A new version of [bold]pypas-cli[/bold] is available: [note]{latest_version}[/note] (you have [note]{current_version}[/note])
             You'll probably get errors if you continue using an old version.
             Run [note]pypas upgrade[/note] to upgrade to the latest version [dim](https://pypas.es/docs/#actualizacion)[/dim].
             [quote][dim]If you want to disable this warning, set an environment variable: [note]{env_var}=1[/note][/quote][/dim]
         """)
         )
+        if confirm:
+            confirm_suffix = f' {confirm_suffix}' if not confirm_suffix.startswith(' ') else ''
+            return console.confirm(f'Continue{confirm_suffix}?')
+    return True
 
 
 def get_file_size(path: Path) -> tuple[int, str]:
@@ -138,11 +147,8 @@ def run_python_file(file='main.py'):
     subprocess.run(shlex.split(cmd))
 
 
-def zip(path: Path, zipname: str, ignored_patterns: list[str] = None) -> Path:
+def zip(path: Path, zipname: str, ignored_patterns: list[str] = []) -> Path:
     """Zip the contents of a directory, excluding specified patterns."""
-    if ignored_patterns is None:
-        ignored_patterns = []
-
     zip_path = path / zipname
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(path):
@@ -162,6 +168,9 @@ def unzip(zip_path: Path, extract_to: Path | None = None) -> Path:
 
 
 def handle_upgrade_pypas():
+    DOCS_UPGRADE_URL = 'https://pypas.es/docs/#actualizacion'
+    CHANGELOG_URL = 'https://github.com/sdelquin/pypas-cli/blob/main/CHANGELOG.md#{version}'
+
     latest_version = get_latest_package_version()
     package_data = get_package_data()
     current_version = package_data.get('version')
@@ -170,14 +179,19 @@ def handle_upgrade_pypas():
         if latest_version != current_version:
             if upgrade_pypas():
                 console.success(
-                    f'Upgraded pypas-cli from [note]v{current_version}[/note] to [note]v{latest_version}[/note]'
+                    f'Upgraded [i]pypas-cli[/i] from [note]{current_version}[/note] to [note]{latest_version}[/note]',
+                    emphasis=True,
                 )
+                console.debug(CHANGELOG_URL.format(version=latest_version.replace('.', '')))
             else:
-                console.error('Error upgrading pypas')
+                console.error('Error upgrading [i]pypas-cli[/i]')
+                console.debug(
+                    f'Please check [u]{DOCS_UPGRADE_URL}[/u] for manual upgrade instructions'
+                )
         else:
             console.success(
-                f"You're on the latest version of pypas-cli: [note]v{current_version}[/note]",
-                emphasis=False,
+                f"You're on the latest version of [i]pypas-cli[/i]: [note]{current_version}[/note]",
             )
     else:
-        console.error('Could not determine pypas-cli version information')
+        console.error('Could not determine [i]pypas-cli[/i] version information')
+        console.debug(f'Please check [u]{DOCS_UPGRADE_URL}[/u] for manual upgrade instructions')

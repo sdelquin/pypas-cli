@@ -36,9 +36,6 @@ class Config:
     def get(self, name) -> object | None:
         return self.data.get(name)
 
-    def has_token(self) -> bool:
-        return 'token' in self.data
-
     def exists(self):
         return self.path.exists()
 

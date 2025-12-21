@@ -5,7 +5,12 @@ import typer
 from rich.prompt import Confirm
 
 from pypas import Config, Exercise, User, console, sysutils
-from pypas.lib.decorators import auth_required, check_version, inside_exercise
+from pypas.lib.decorators import (
+    auth_required,
+    check_exercise_version,
+    check_pypas_version,
+    inside_exercise,
+)
 
 app = typer.Typer(
     add_completion=False,
@@ -34,7 +39,7 @@ def default(
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
     """Get (download) exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
@@ -52,14 +57,14 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
         if not Confirm.ask('Continue', default=False):
             return
     config = Config()
-    if exercise.download(config.get('token')):
+    if exercise.download(config.get('token')):  # type: ignore
         exercise.unzip()
         console.info(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
 
 
 @app.command()
 @inside_exercise
-@check_version
+@check_pypas_version
 def doc():
     """Open documentation for exercise."""
     exercise = Exercise.from_config()
@@ -68,7 +73,7 @@ def doc():
 
 @app.command()
 @inside_exercise
-@check_version
+@check_pypas_version
 def update(
     force: bool = typer.Option(
         False, '--force', '-f', help='Force update and omit backup of existing files'
@@ -76,14 +81,19 @@ def update(
 ):
     """Update exercise."""
     # Backup patterns follow fnmatch syntax: https://docs.python.org/3/library/fnmatch.html
+    if (exercise := Exercise.from_config()).is_up_to_date():
+        console.success(
+            f"You're on the latest version of [i]{exercise}[/i]: [note]{exercise.version}[/note]"
+        )
+        return
     config = Config()
-    if (exercise := Exercise.from_config()).download(config.get('token')):
+    if exercise.download(config.get('token')):  # type: ignore
         dir = exercise.unzip(to_tmp_dir=True)
         exercise.update(src_dir=dir, backup=not force)
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def auth(token: str = typer.Argument(help='Access token')):
     """Authenticate at pypas.es (token required)."""
     if User(token).authenticate():
@@ -99,7 +109,7 @@ def upgrade():
 
 @app.command()
 @inside_exercise
-@check_version
+@check_pypas_version
 def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.')):
     """Compress exercise contents."""
     # Excluded patterns follow fnmatch syntax: https://docs.python.org/3/library/fnmatch.html
@@ -112,7 +122,7 @@ def zip(verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase ve
 @app.command()
 @auth_required
 @inside_exercise
-@check_version
+@check_pypas_version
 def put():
     """Put (upload) exercise."""
     config = Config()
@@ -125,12 +135,13 @@ def put():
             return
     exercise = Exercise.from_config()
     zipfile = exercise.zip(to_tmp_dir=True)
-    exercise.upload(zipfile, config['token'])
+    exercise.upload(zipfile, config['token'])  # type: ignore
 
 
 @app.command(context_settings={'ignore_unknown_options': True})
 @inside_exercise
-@check_version
+@check_exercise_version(confirm=True, confirm_suffix='testing')
+@check_pypas_version(confirm=True, confirm_suffix='testing')
 def test(
     args: List[str] = typer.Argument(None, help='Arguments passed to test tool'),
 ):
@@ -140,18 +151,18 @@ def test(
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def log(
     frame: str = typer.Option('', '--frame', '-f', help='Filter by frame.'),
     verbose: bool = typer.Option(False, '--verbose', '-v', help='Increase verbosity.'),
 ):
     """Log of uploaded assignments."""
     config = Config()
-    Exercise.log(config.get('token'), frame, verbose)
+    Exercise.log(config.get('token'), frame, verbose)  # type: ignore
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def list(
     frame: str = typer.Option('', '--frame', '-f', help='Filter by frame.'),
     primary_topic: str = typer.Option('', '--ptopic', '-p', help='Filter by primary topic.'),
@@ -159,11 +170,11 @@ def list(
 ):
     """List exercises. Topic in format <primary>/<secondary>"""
     config = Config()
-    Exercise.list(config.get('token'), frame, primary_topic, secondary_topic)
+    Exercise.list(config.get('token'), frame, primary_topic, secondary_topic)  # type: ignore
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def unauth():
     """Unauthenticate from pypas.es (clear token)."""
     config = Config()
@@ -172,7 +183,7 @@ def unauth():
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def run():
     """Run exercise with given args."""
     exercise = Exercise.from_config()
@@ -180,7 +191,7 @@ def run():
 
 
 @app.command()
-@check_version
+@check_pypas_version
 def pull(
     item_slug: str = typer.Argument(help='Slug of exercise or frame.'),
 ):
@@ -193,7 +204,7 @@ def pull(
         if not Confirm.ask('Continue', default=False):
             return
     config = Config()
-    if file := Exercise.pull(item_slug, config.get('token')):
+    if file := Exercise.pull(item_slug, config.get('token')):  # type: ignore
         folder = sysutils.unzip(file, extract_to=dst_folder)
         console.info(f'Assignment(s) are available at [note]./{folder.name}[/note] [success]✔')
 
