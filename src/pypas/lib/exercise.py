@@ -62,7 +62,7 @@ class Exercise:
     def zip(self, to_tmp_dir: bool = False, verbose: bool = False) -> Path:
         console.info('Compressing exercise contents', cr=verbose)
         exclude_patterns = pathspec.PathSpec.from_lines(
-            'gitwildmatch', self.config.get('exclude_from_zip', [])
+            'gitignore', self.config.get('exclude_from_zip', [])
         )
         zip_path = tempfile.mkstemp(suffix='.zip')[1] if to_tmp_dir else self.zipname
         zip_file = Path(zip_path)
@@ -99,8 +99,9 @@ class Exercise:
         os.system(f'{sysutils.get_open_cmd()} docs/README.pdf')
 
     def update(self, src_dir: Path, backup: bool = True):
+        update_config = self.load_config(src_dir / settings.EXERCISE_CONFIG_FILE)
         backup_files = pathspec.PathSpec.from_lines(
-            'gitwildmatch', self.config.get('backup_on_update', [])
+            'gitignore', update_config.get('backup_on_update', [])
         )
         for dirpath, dirs, files in os.walk(src_dir):
             for filename in files:
@@ -120,6 +121,16 @@ class Exercise:
                     console.info(f'[highlight][A][/highlight] {current_file}')
                 current_file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(incoming_file, current_file)
+
+        # Remove files marked for removal
+        delete_files = pathspec.PathSpec.from_lines(
+            'gitignore', update_config.get('delete_on_update', [])
+        )
+        for current_file in delete_files.match_tree(Path('.')):
+            current_file_path = Path(current_file)
+            console.info(f'[highlight][D][/highlight] {current_file}')
+            current_file_path.unlink(missing_ok=True)
+        # Clean up
         shutil.rmtree(src_dir, ignore_errors=True)
         console.success(
             f'Updated [i]{self}[/i] from [note]{self.version}[/note] to [note]{self.latest_version}[/note]',
@@ -152,7 +163,7 @@ class Exercise:
         return cls(Exercise.load_config()['slug'])
 
     @staticmethod
-    def load_config(filename: str = settings.EXERCISE_CONFIG_FILE):
+    def load_config(filename: str = settings.EXERCISE_CONFIG_FILE) -> dict:
         with open(filename) as f:
             return toml.load(f)
 
