@@ -21,3 +21,7 @@ PYPAS_SKIP_VERSION_CHECK_VAR = config(
 )
 
 DEFAULT_EXERCISE_VERSION = config('DEFAULT_EXERCISE_VERSION', default='0.1.0')
+
+PYPAS_DOCS_URL = 'https://aprendepython.es/third-party/learning/pypas/'
+PYPAS_DOCS_UPGRADE_URL = urljoin(PYPAS_DOCS_URL, '#upgrade')
+PYPAS_DOCS_UPDATE_URL = urljoin(PYPAS_DOCS_URL, '#update')

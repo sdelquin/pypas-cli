@@ -115,7 +115,7 @@ def handle_package_version(
             dedent(f"""
             A new version of [bold]pypas-cli[/bold] is available: [note]{latest_version}[/note] (you have [note]{current_version}[/note])
             You'll probably get errors if you continue using an old version.
-            Run [note]pypas upgrade[/note] to upgrade to the latest version [dim](https://pypas.es/docs/#actualizacion)[/dim].
+            Run [note]pypas upgrade[/note] to upgrade to the latest version [dim]({settings.PYPAS_DOCS_UPDATE_URL})[/dim].
             [quote][dim]If you want to disable this warning, set an environment variable: [note]{env_var}=1[/note][/quote][/dim]
         """)
         )
@@ -168,7 +168,6 @@ def unzip(zip_path: Path, extract_to: Path | None = None) -> Path:
 
 
 def handle_upgrade_pypas():
-    DOCS_UPGRADE_URL = 'https://pypas.es/docs/#actualizacion'
     CHANGELOG_URL = 'https://github.com/sdelquin/pypas-cli/blob/main/CHANGELOG.md#{version}'
 
     latest_version = get_latest_package_version()
@@ -186,7 +185,7 @@ def handle_upgrade_pypas():
             else:
                 console.error('Error upgrading [i]pypas-cli[/i]')
                 console.debug(
-                    f'Please check [u]{DOCS_UPGRADE_URL}[/u] for manual upgrade instructions'
+                    f'Please check [u]{settings.PYPAS_DOCS_UPGRADE_URL}[/u] for manual upgrade instructions'
                 )
         else:
             console.success(
@@ -194,4 +193,6 @@ def handle_upgrade_pypas():
             )
     else:
         console.error('Could not determine [i]pypas-cli[/i] version information')
-        console.debug(f'Please check [u]{DOCS_UPGRADE_URL}[/u] for manual upgrade instructions')
+        console.debug(
+            f'Please check [u]{settings.PYPAS_DOCS_UPGRADE_URL}[/u] for manual upgrade instructions'
+        )

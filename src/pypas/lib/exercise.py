@@ -308,7 +308,7 @@ class Exercise:
                 dedent(f"""
                 A new version of [bold]{self.slug}[/bold] is available: [note]{latest_version}[/note] (you have [note]{current_version}[/note])
                 You'll probably get errors if you continue using an old version.
-                Run [note]pypas update[/note] to update to the latest version [dim](https://pypas.es/docs/#actualizar-un-ejercicio)[/dim].
+                Run [note]pypas update[/note] to update to the latest version [dim]({settings.PYPAS_DOCS_UPDATE_URL})[/dim].
                 [quote][dim]If you want to disable this warning, set an environment variable: [note]{env_var}=1[/note][/quote][/dim]
             """)
             )
