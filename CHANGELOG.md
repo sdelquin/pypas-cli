@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.5.2
+
+- Add update notes.
+
 ## 0.5.1
 
 - Fix file deletion on exercise update.
