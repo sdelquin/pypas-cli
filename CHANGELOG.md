@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## X.X.X
+
+- Allow getting public exercises when authenticated.
+
 ## 0.5.2
 
 - Add update notes.

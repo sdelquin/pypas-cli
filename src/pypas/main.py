@@ -40,7 +40,10 @@ def default(
 
 @app.command()
 @check_pypas_version
-def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
+def get(
+    exercise_slug: str = typer.Argument(help='Slug of exercise'),
+    public: bool = typer.Option(False, '--public', '-p', help='Get public exercise'),
+):
     """Get (download) exercise."""
     if (exercise := Exercise(exercise_slug)).folder_exists():
         console.warning(f'Folder ./{exercise.folder} already exists!')
@@ -57,7 +60,7 @@ def get(exercise_slug: str = typer.Argument(help='Slug of exercise')):
         if not Confirm.ask('Continue', default=False):
             return
     config = Config()
-    if exercise.download(config.get('token')):  # type: ignore
+    if exercise.download(public or config.get('token')):  # type: ignore
         exercise.unzip()
         console.info(f'Exercise is available at [note]./{exercise.folder}[/note] [success]✔')
 
