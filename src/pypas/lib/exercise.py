@@ -136,6 +136,8 @@ class Exercise:
             f'Updated [i]{self}[/i] from [note]{self.version}[/note] to [note]{self.latest_version}[/note]',
             emphasis=True,
         )
+        if msg := update_config.get('update_notes'):
+            console.debug(f' └ Notes: [italic][success]{msg}[/success][/italic]')
 
     def upload(self, zipfile: Path, token: str):
         if self.check_zipfile_size(zipfile):
