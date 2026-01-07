@@ -97,8 +97,16 @@ def update(
 
 @app.command()
 @check_pypas_version
-def auth(token: str = typer.Argument(help='Access token')):
-    """Authenticate at pypas.es (token required)."""
+def auth(token: str = typer.Argument(default='', help='Access token')):
+    """Authenticate at pypas.es."""
+    if not token:
+        config = Config()
+        if saved_token := config.get('token'):
+            console.success('You are already authenticated.')
+            console.info(f'Your token is: [note]{saved_token}[/note]')
+        else:
+            console.warning('You are not authenticated yet.')
+        return
     if User(token).authenticate():
         config = Config()
         config.save(token=token)
