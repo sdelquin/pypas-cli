@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.5.5
+
+- Fix release notes on update.
+
 ## 0.5.4
 
 - Allow historial for release notes in exercises.
