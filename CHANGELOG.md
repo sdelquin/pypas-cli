@@ -2,7 +2,7 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
-## X.X.X
+## 0.5.3
 
 - Allow getting public exercises when authenticated.
 - Add chance to get informed about current authentication.
