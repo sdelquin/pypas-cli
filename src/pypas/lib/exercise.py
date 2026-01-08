@@ -318,3 +318,7 @@ class Exercise:
                 confirm_suffix = f' {confirm_suffix}' if not confirm_suffix.startswith(' ') else ''
                 return console.confirm(f'Continue{confirm_suffix}?')
         return True
+
+    def show_info(self):
+        console.info(f'Slug: {self.slug}')
+        console.info(f'Version: [note]{self.version}[/note]')

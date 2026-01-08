@@ -6,6 +6,7 @@ Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch
 
 - Allow getting public exercises when authenticated.
 - Add chance to get informed about current authentication.
+- Add command to show exercise info.
 
 ## 0.5.2
 

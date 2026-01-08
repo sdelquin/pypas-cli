@@ -220,5 +220,14 @@ def pull(
         console.info(f'Assignment(s) are available at [note]./{folder.name}[/note] [success]✔')
 
 
+@app.command()
+@inside_exercise
+@check_pypas_version
+def exercise():
+    """Show exercise information."""
+    exercise = Exercise.from_config()
+    exercise.show_info()
+
+
 if __name__ == '__main__':
     app()
