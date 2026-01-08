@@ -226,10 +226,14 @@ def pull(
 @app.command()
 @inside_exercise
 @check_pypas_version
-def exercise():
+def exercise(
+    add_release_notes: bool = typer.Option(
+        False, '--release-notes', '-r', help='Add release notes.'
+    ),
+):
     """Show exercise information."""
     exercise = Exercise.from_config()
-    exercise.show_info()
+    exercise.show_info(add_release_notes=add_release_notes)
 
 
 if __name__ == '__main__':

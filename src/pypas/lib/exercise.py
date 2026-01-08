@@ -136,8 +136,14 @@ class Exercise:
             f'Updated [i]{self}[/i] from [note]{self.version}[/note] to [note]{self.latest_version}[/note]',
             emphasis=True,
         )
-        if msg := update_config.get('update_notes'):
-            console.debug(f' └ Notes: [italic][success]{msg}[/success][/italic]')
+        self.show_release_notes(from_version=self.version)
+
+    def show_release_notes(self, from_version: str = '', to_version: str = ''):
+        release_notes = self.config.get('release_notes', {})
+        for version, notes in sorted(release_notes.items()):
+            if (from_version and version <= from_version) or (to_version and version > to_version):
+                continue
+            console.debug(f'* {version}: [italic][success]{notes}[/success][/italic]')
 
     def upload(self, zipfile: Path, token: str):
         if self.check_zipfile_size(zipfile):
@@ -319,6 +325,8 @@ class Exercise:
                 return console.confirm(f'Continue{confirm_suffix}?')
         return True
 
-    def show_info(self):
+    def show_info(self, add_release_notes: bool = False):
         console.info(f'Slug: {self.slug}')
         console.info(f'Version: [note]{self.version}[/note]')
+        if add_release_notes:
+            self.show_release_notes()
