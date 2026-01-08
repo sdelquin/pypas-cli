@@ -40,6 +40,10 @@ class Exercise:
             self._cfg = Exercise.load_config()
         return self._cfg
 
+    def invalidate_config_cache(self):
+        if hasattr(self, '_cfg'):
+            del self._cfg
+
     @property
     def files(self):
         for item in Path('.').glob('**/*'):
@@ -136,7 +140,9 @@ class Exercise:
             f'Updated [i]{self}[/i] from [note]{self.version}[/note] to [note]{self.latest_version}[/note]',
             emphasis=True,
         )
-        self.show_release_notes(from_version=self.version)
+        from_version = self.version
+        self.invalidate_config_cache()
+        self.show_release_notes(from_version=from_version)
 
     def show_release_notes(self, from_version: str = '', to_version: str = ''):
         release_notes = self.config.get('release_notes', {})
