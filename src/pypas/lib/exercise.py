@@ -50,7 +50,7 @@ class Exercise:
         return self.folder.exists()
 
     def download(self, token: str):
-        url = settings.PYPAS_GET_EXERCISE_URLPATH.format(exercise_slug=self.slug)
+        url = settings.PYPAS_GET_EXERCISE_URL.format(exercise_slug=self.slug)
         console.debug(f'Getting exercise from: [italic]{url}')
         if monad := network.download(url, dict(token=token), self.zipname, save_temp=True):
             self.downloaded_zip = monad.payload
@@ -141,7 +141,7 @@ class Exercise:
 
     def upload(self, zipfile: Path, token: str):
         if self.check_zipfile_size(zipfile):
-            url = settings.PYPAS_PUT_ASSIGNMENT_URLPATH.format(exercise_slug=self.slug)
+            url = settings.PYPAS_PUT_ASSIGNMENT_URL.format(exercise_slug=self.slug)
             console.debug(f'Uploading exercise to: [italic]{url}')
             if monad := network.upload(
                 url, fields=dict(token=token), filepath=zipfile, filename=self.zipname
@@ -184,7 +184,7 @@ class Exercise:
 
     @staticmethod
     def log(token: str, frame_ref: str, verbose: bool = False) -> None:
-        url = settings.PYPAS_LOG_URLPATH
+        url = settings.PYPAS_LOG_URL
         with console.status(f'[dim]Getting log from: [italic]{url}'):
             payload = dict(token=token, frame=frame_ref, verbose=verbose)
             if monad := network.post(url, payload):
@@ -229,7 +229,7 @@ class Exercise:
 
     @classmethod
     def list(cls, token: str, frame_ref: str, primary_topic: str, secondary_topic: str):
-        url = settings.PYPAS_LIST_EXERCISES_URLPATH
+        url = settings.PYPAS_LIST_EXERCISES_URL
         with console.status(f'[dim]Getting exercise list from: [italic]{url}'):
             payload = dict(
                 token=token,
@@ -263,7 +263,7 @@ class Exercise:
 
     @staticmethod
     def pull(item_slug: str, token: str) -> Path | None:
-        url = settings.PYPAS_PULL_URLPATH.format(item_slug=item_slug)
+        url = settings.PYPAS_PULL_URL.format(item_slug=item_slug)
         console.debug(f'Pulling items from: [italic]{url}')
         if monad := network.download(url, dict(token=token), f'{item_slug}.zip', save_temp=True):
             return monad.payload
@@ -275,7 +275,7 @@ class Exercise:
     def latest_version(self) -> str | None:
         if self._latest_version:
             return self._latest_version
-        url = settings.PYPAS_EXERCISE_INFO_URLPATH.format(exercise_slug=self.slug)
+        url = settings.PYPAS_EXERCISE_INFO_URL.format(exercise_slug=self.slug)
         if monad := network.get(url):
             self._latest_version = monad.payload.get('version')
             return self._latest_version

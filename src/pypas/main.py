@@ -102,8 +102,11 @@ def auth(token: str = typer.Argument(default='', help='Access token')):
     if not token:
         config = Config()
         if saved_token := config.get('token'):
-            console.success('You are already authenticated.')
-            console.info(f'Your token is: [note]{saved_token}[/note]')
+            console.info(f'Token: [note]{saved_token}[/note]')
+            user = User(saved_token)  # type: ignore
+            if info := user.auth_info():
+                console.info(f'Username: {info["username"]}')
+                console.info(f'Context: {info["context"]}')
         else:
             console.warning('You are not authenticated yet.')
         return
