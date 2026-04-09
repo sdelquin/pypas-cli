@@ -143,8 +143,7 @@ def get_file_size(path: Path) -> tuple[int, str]:
 
 
 def run_python_file(file='main.py'):
-    cmd = f'{sys.executable} {file}'
-    subprocess.run(shlex.split(cmd))
+    subprocess.run([sys.executable, file])
 
 
 def zip(path: Path, zipname: str, ignored_patterns: list[str] = []) -> Path:
