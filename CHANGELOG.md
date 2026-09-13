@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.5.7
+
+- Fix URLs for pypas documentation.
+
 ## 0.5.6
 
 - Fix `pypas run` for windows machines.
