@@ -225,6 +225,7 @@ def pull(
 
 @app.command()
 @inside_exercise
+@check_exercise_version(confirm=False)
 @check_pypas_version
 def exercise(
     add_release_notes: bool = typer.Option(
