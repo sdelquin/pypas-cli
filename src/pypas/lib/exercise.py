@@ -146,7 +146,9 @@ class Exercise:
 
     def show_release_notes(self, from_version: str = '', to_version: str = ''):
         release_notes = self.config.get('release_notes', {})
-        for version, notes in sorted(release_notes.items()):
+        for version, notes in sorted(
+            release_notes.items(), key=lambda rn: tuple(map(int, rn[0].split('.')))
+        ):
             if (from_version and version <= from_version) or (to_version and version > to_version):
                 continue
             console.debug(f'* {version}: [italic][success]{notes}[/success][/italic]')
