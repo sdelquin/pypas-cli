@@ -2,6 +2,10 @@
 
 Releases use [Semantic Versioning](https://semver.org/) (`<major>.<minor>.<patch>`).
 
+## 0.5.9
+
+- Fix bug in showing exercise releases.
+
 ## 0.5.8
 
 - Check exercise updates when getting exercise version.

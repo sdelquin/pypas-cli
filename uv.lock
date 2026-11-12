@@ -359,7 +359,7 @@ wheels = [
 
 [[package]]
 name = "pypas-cli"
-version = "0.5.8"
+version = "0.5.9"
 source = { virtual = "." }
 dependencies = [
     { name = "pathspec" },
